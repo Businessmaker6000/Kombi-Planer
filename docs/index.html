@@ -709,11 +709,11 @@ const OPS = [['druck', 'Druck', 'Schweizer Standard: flacher Druckknopf'], ['wip
 const LINES = [
   {
     id: 'ediziodue', brand: 'Feller', name: 'EDIZIOdue', tag: 'kantig, glänzend', size1: 88, shape: 'sq',
-    mounts: ['up', 'ap'], apH: 44, wip: { w: 54, h: 54, r: 1.0 },
-    frame: { style: 'roof', border: 14, rc: 1.6, er: 0.35, hOut: 6.2, hIn: 9.4 },
-    mframe: { style: 'flat', border: 17, rc: 1.0, er: 0.6, h: 8.0 }, mname: 'prestige',
-    insert: { shape: 'sq', size: 59.7, r: 0.5, er: 0.3, proud: 0.35 },
-    rocker: { w: 41, h: 41, r: 0.6, er: 0.4, proud: 2.6, tilt: 3.8 }, led: 'bar',
+    mounts: ['up', 'ap'], apH: 54, wip: { w: 54, h: 54, r: 1.0 },
+    frame: { style: 'roof', border: 14, rc: 4.5, er: 1.2, hOut: 5.0, hIn: 7.6 },
+    mframe: { style: 'flat', border: 17, rc: 3.5, er: 1.0, h: 6.2 }, mname: 'prestige',
+    insert: { shape: 'sq', size: 59.7, r: 1.4, er: 0.35, proud: 0.35 },
+    rocker: { w: 41, h: 41, r: 1.5, er: 0.6, proud: 2.6, tilt: 3.8 }, led: 'bar',
     kombi: { rw: 40.6, rh: 25, ry: 10.3, sy: -15.1 },
     tri: 0, triR: 16.8, finish: 'lacquer',
     colors: [
@@ -726,9 +726,9 @@ const LINES = [
   },
   {
     id: 'edizioliv', brand: 'Feller', name: 'EDIZIO.liv', tag: 'flach, matt', size1: 96, shape: 'sq',
-    mounts: ['up', 'ap'], apH: 42, wip: { w: 54, h: 54, r: 2.0 },
-    frame: { style: 'flat', border: 18, rc: 3.0, er: 0.9, h: 7.0 },
-    mframe: { style: 'flat', border: 18, rc: 2.0, er: 0.6, h: 7.5 }, mname: 'prestige',
+    mounts: ['up', 'ap'], apH: 52, wip: { w: 54, h: 54, r: 2.0 },
+    frame: { style: 'flat', border: 18, rc: 3.0, er: 0.9, h: 5.2 },
+    mframe: { style: 'flat', border: 18, rc: 2.0, er: 0.6, h: 5.7 }, mname: 'prestige',
     insert: { shape: 'sq', size: 59.7, r: 1.4, er: 0.35, proud: 0.25 },
     rocker: { w: 42, h: 42, r: 1.8, er: 0.5, proud: 2.0, tilt: 2.8 }, led: 'bar',
     kombi: { rw: 41, rh: 25, ry: 10.3, sy: -15.1 },
@@ -740,8 +740,8 @@ const LINES = [
   },
   {
     id: 'standarddue', brand: 'Feller', name: 'STANDARDdue', tag: 'Kreis im Quadrat', size1: 86, shape: 'circle',
-    mounts: ['up', 'ap'], apH: 46, wip: { w: 30, h: 30, w2: 34, r: 4 },
-    frame: { style: 'pillow', border: 13, rc: 8.5, er: 3.0, h: 8.6 },
+    mounts: ['up', 'ap'], apH: 56, wip: { w: 30, h: 30, w2: 34, r: 4 },
+    frame: { style: 'pillow', border: 13, rc: 8.5, er: 3.0, h: 6.8 },
     insert: { shape: 'circle', d: 53, dBig: 58.4, bead: 3.2, beadH: 1.25, beadBig: 1.9, beadBigH: 0.75, proud: 0 },
     rocker: { w: 25, h: 25, w2: 31, r: 3.4, er: 0.8, proud: 3.2, tilt: 4.0 }, led: 'dot',
     kombi: { rw: 27, rh: 22, ry: 11.2, sy: -11.8 },
@@ -751,8 +751,8 @@ const LINES = [
   },
   {
     id: 'kallysto-line', brand: 'Hager', name: 'kallysto.line', tag: 'geradlinig', size1: 92, shape: 'sq',
-    mounts: ['up', 'ap'], apH: 44, wip: { w: 55, h: 55, r: 1.2 },
-    frame: { style: 'flat', border: 16, rc: 2.2, er: 0.7, h: 7.5 },
+    mounts: ['up', 'ap'], apH: 54, wip: { w: 55, h: 55, r: 1.2 },
+    frame: { style: 'flat', border: 16, rc: 2.2, er: 0.7, h: 5.6 },
     insert: { shape: 'sq', size: 59.6, r: 0.6, er: 0.3, proud: 0.3 },
     rocker: { w: 45, h: 45, r: 1.1, er: 0.5, proud: 2.2, tilt: 3.0 }, led: 'dot',
     kombi: { rw: 45, rh: 18.6, ry: 12.7, sy: -10.4 },
@@ -765,7 +765,7 @@ const LINES = [
   {
     id: 'kallysto-trend', brand: 'Hager', name: 'kallysto.trend', tag: 'weich gerundet', size1: 94, shape: 'sq',
     mounts: ['up'], wip: { w: 55, h: 55, r: 1.2 },
-    frame: { style: 'flat', border: 17, rc: 6.5, er: 2.6, h: 8.6 },
+    frame: { style: 'flat', border: 17, rc: 6.5, er: 2.6, h: 6.8 },
     insert: { shape: 'sq', size: 59.6, r: 0.6, er: 0.3, proud: 0.3 },
     rocker: { w: 45, h: 45, r: 1.1, er: 0.5, proud: 2.2, tilt: 3.0 }, led: 'dot',
     kombi: { rw: 45, rh: 18.6, ry: 12.7, sy: -10.4 },
@@ -779,7 +779,7 @@ const LINES = [
     id: 'kallysto-art', brand: 'Hager', name: 'kallysto.art', tag: 'Rahmen aus Echtmaterial', size1: 94, shape: 'sq',
     mounts: ['up'], wip: { w: 55, h: 55, r: 1.2 },
     frame: null,
-    mframe: { style: 'flat', border: 17, rc: 1.2, er: 0.5, h: 7.6 }, mname: 'art',
+    mframe: { style: 'flat', border: 17, rc: 1.2, er: 0.5, h: 5.8 }, mname: 'art',
     insert: { shape: 'sq', size: 59.6, r: 0.6, er: 0.3, proud: 0.3 },
     rocker: { w: 45, h: 45, r: 1.1, er: 0.5, proud: 2.2, tilt: 3.0 }, led: 'dot',
     kombi: { rw: 45, rh: 18.6, ry: 12.7, sy: -10.4 },
@@ -791,9 +791,9 @@ const LINES = [
   },
   {
     id: 'sidus', brand: 'ABB', name: 'Sidus', tag: 'schlanker Rahmen', size1: 88, shape: 'sq',
-    mounts: ['up', 'ap'], apH: 48, wip: { w: 54, h: 54, r: 1.4 },
-    frame: { style: 'flat', border: 14, rc: 1.4, er: 0.5, h: 8.2 },
-    mframe: { style: 'flat', border: 14, rc: 1.0, er: 0.5, h: 8.2 }, mname: 'Echtmaterial',
+    mounts: ['up', 'ap'], apH: 58, wip: { w: 54, h: 54, r: 1.4 },
+    frame: { style: 'flat', border: 14, rc: 1.4, er: 0.5, h: 6.3 },
+    mframe: { style: 'flat', border: 14, rc: 1.0, er: 0.5, h: 6.3 }, mname: 'Echtmaterial',
     insert: { shape: 'sq', size: 59.6, r: 0.9, er: 0.35, proud: 0.3 },
     rocker: { w: 41, h: 41, r: 1.3, er: 0.5, proud: 2.2, tilt: 3.0 }, led: 'dot',
     kombi: { rw: 44, rh: 17.5, ry: 12.6, sy: -10.4 },
@@ -806,7 +806,7 @@ const LINES = [
     id: 'nevo', brand: 'Feller', name: 'NEVO', tag: 'IP55, runder Druckknopf', size1: 82, shape: 'sq',
     mounts: ['nap', 'nup'], wet: true, pitch: 76, lid: 'body', gasket: true,
     frame: { style: 'units', border: 3, rc: 9, er: 2.2, h: 58, seam: 15, box: true },
-    nupFrame: { style: 'units', border: 3, rc: 7, er: 1.6, h: 9 },
+    nupFrame: { style: 'units', border: 3, rc: 7, er: 1.6, h: 7.4 },
     insert: { shape: 'sq', size: 70, r: 7, er: 1.3, proud: 1.6, screws: 4 },
     rocker: { w: 42, h: 42, r: 21, er: 0.9, proud: 2.6, tilt: 3.5, round: true }, wip: { w: 44, h: 44, r: 5 }, led: 'dot',
     kombi: { rw: 40, rh: 18, ry: 12, sy: -10 },
@@ -818,7 +818,7 @@ const LINES = [
     id: 'robusto', brand: 'Hager', name: 'robusto', tag: 'IP55, quadratische Taste', size1: 82, shape: 'sq',
     mounts: ['nap', 'nup'], wet: true, pitch: 76, lid: 'lidclear', gasket: false,
     frame: { style: 'units', border: 3, rc: 7, er: 2.0, h: 56, seam: 14, box: true },
-    nupFrame: { style: 'units', border: 3, rc: 6, er: 1.5, h: 9 },
+    nupFrame: { style: 'units', border: 3, rc: 6, er: 1.5, h: 7.4 },
     insert: { shape: 'sq', size: 70, r: 5.5, er: 1.2, proud: 1.4, screws: 4 },
     rocker: { w: 40, h: 40, r: 2.5, er: 0.8, proud: 2.2, tilt: 3.2 }, wip: { w: 46, h: 46, r: 3 }, led: 'dot',
     kombi: { rw: 40, rh: 18, ry: 12, sy: -10 },
@@ -1418,33 +1418,42 @@ function wallDown(pr, F) {
   pr.push([0, 0, 1, 0]);
 }
 
+/* Kissenfläche zwischen zwei Konturen mit gleich vielen Punkten: t = 0 aussen auf z0, t = 1 an der Öffnung auf z1 */
+function cushion(g, C0, C1, z0, z1, K) {
+  const n = C0.length, P = [];
+  for (let k = 0; k <= K; k++) {
+    const t = k / K, z = z0 + (z1 - z0) * (1 - (1 - t) * (1 - t)), row = [];
+    for (let i = 0; i < n; i++) row.push([C0[i].x + (C1[i].x - C0[i].x) * t, C0[i].y + (C1[i].y - C0[i].y) * t, z]);
+    P.push(row);
+  }
+  const V = P.map(function (row, k) {
+    return row.map(function (q, i) {
+      const u = row[(i + 1) % n], w = row[(i + n - 1) % n], up = P[Math.min(K, k + 1)][i], dn = P[Math.max(0, k - 1)][i];
+      const ax = u[0] - w[0], ay = u[1] - w[1], az = u[2] - w[2], bx = up[0] - dn[0], by = up[1] - dn[1], bz = up[2] - dn[2];
+      let nx = ay * bz - az * by, ny = az * bx - ax * bz, nz = ax * by - ay * bx;
+      const l = Math.hypot(nx, ny, nz) || 1;
+      if (nz < 0) { nx = -nx; ny = -ny; nz = -nz; }
+      return g.v(q[0], q[1], q[2], nx / l, ny / l, nz / l);
+    });
+  });
+  for (let k = 0; k < K; k++) for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    g.quad(V[k][i], V[k][j], V[k + 1][j], V[k + 1][i]);
+  }
+}
+
 function buildFrame(kit, L, F, cols, rows, info) {
   const P = L.pitch || PITCH, ow = cols * P, oh = rows * P, b = F.border, W = ow + 2 * b, H = oh + 2 * b;
   const g = kit.b('frame'), cl = 0.15;
   kit.setM(null);
   if (F.style === 'roof') {
-    /* EDIZIOdue: vier leicht geneigte Flächen mit Gehrungslinien in den Ecken */
-    const a = ow / 2 + cl, bb = oh / 2 + cl, hO = F.hOut, hI = F.hIn, er = F.er, rc = F.rc, rr = rc - er;
-    const Co = cRRect(W, H, rc), pr = [];
-    parc(pr, -er, hO - er, er, 0, H_PI, 3); wallDown(pr, F);
+    /* EDIZIOdue: weich gerundete Oberseite, aussen steiler, zur Öffnung flach auslaufend */
+    const a = ow / 2 + cl, bb = oh / 2 + cl, hO = F.hOut, hI = F.hIn, er = F.er, rc = F.rc;
+    const Co = cRRect(W, H, rc, 1), pr = [];
+    parc(pr, -er, hO - er, er, 0, H_PI, 4); wallDown(pr, F);
     g.loft(Co, pr);
-    const slope = (hI - hO) / (b - cl - er), nl = Math.hypot(slope, 1), ccx = W / 2 - rc, ccy = H / 2 - rc, K = 4;
-    [
-      { n: [1, 0], i0: [a, -bb], i1: [a, bb], c0: [ccx, -ccy], c1: [ccx, ccy], a0: -PI / 4 },
-      { n: [0, 1], i0: [a, bb], i1: [-a, bb], c0: [ccx, ccy], c1: [-ccx, ccy], a0: PI / 4 },
-      { n: [-1, 0], i0: [-a, bb], i1: [-a, -bb], c0: [-ccx, ccy], c1: [-ccx, -ccy], a0: 3 * PI / 4 },
-      { n: [0, -1], i0: [-a, -bb], i1: [a, -bb], c0: [-ccx, -ccy], c1: [ccx, -ccy], a0: 5 * PI / 4 }
-    ].forEach(function (s) {
-      const nx = s.n[0] * slope / nl, ny = s.n[1] * slope / nl, nz = 1 / nl, outer = [];
-      for (let k = 0; k <= K; k++) { const an = s.a0 + k / K * PI / 4; outer.push([s.c0[0] + rr * Math.cos(an), s.c0[1] + rr * Math.sin(an)]); }
-      for (let k = 0; k <= K; k++) { const an = s.a0 + PI / 4 + k / K * PI / 4; outer.push([s.c1[0] + rr * Math.cos(an), s.c1[1] + rr * Math.sin(an)]); }
-      const vi0 = g.v(s.i0[0], s.i0[1], hI, nx, ny, nz), vi1 = g.v(s.i1[0], s.i1[1], hI, nx, ny, nz);
-      const vo = outer.map(function (p) { return g.v(p[0], p[1], hO, nx, ny, nz); });
-      for (let k = 0; k < K; k++) g.tri(vi0, vo[k], vo[k + 1]);
-      g.tri(vi0, vo[K], vo[K + 1]); g.tri(vi0, vo[K + 1], vi1);
-      for (let k = K + 1; k < vo.length - 1; k++) g.tri(vi1, vo[k], vo[k + 1]);
-    });
-    const Ci = cRRect(2 * a, 2 * bb, 0);
+    const Ci = cRRect(2 * a, 2 * bb, L.insert.r + cl, 1);
+    cushion(g, cOff(Co, -er), Ci, hO, hI, 8);
     g.loft(Ci, [[0, hI, -1, 0], [0, hI - 5, -1, 0]]);
   } else if (F.style === 'pillow') {
     /* STANDARDdue: eine Platte mit runden Ausschnitten */

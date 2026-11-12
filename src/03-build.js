@@ -475,33 +475,42 @@ function wallDown(pr, F) {
   pr.push([0, 0, 1, 0]);
 }
 
+/* Kissenfläche zwischen zwei Konturen mit gleich vielen Punkten: t = 0 aussen auf z0, t = 1 an der Öffnung auf z1 */
+function cushion(g, C0, C1, z0, z1, K) {
+  const n = C0.length, P = [];
+  for (let k = 0; k <= K; k++) {
+    const t = k / K, z = z0 + (z1 - z0) * (1 - (1 - t) * (1 - t)), row = [];
+    for (let i = 0; i < n; i++) row.push([C0[i].x + (C1[i].x - C0[i].x) * t, C0[i].y + (C1[i].y - C0[i].y) * t, z]);
+    P.push(row);
+  }
+  const V = P.map(function (row, k) {
+    return row.map(function (q, i) {
+      const u = row[(i + 1) % n], w = row[(i + n - 1) % n], up = P[Math.min(K, k + 1)][i], dn = P[Math.max(0, k - 1)][i];
+      const ax = u[0] - w[0], ay = u[1] - w[1], az = u[2] - w[2], bx = up[0] - dn[0], by = up[1] - dn[1], bz = up[2] - dn[2];
+      let nx = ay * bz - az * by, ny = az * bx - ax * bz, nz = ax * by - ay * bx;
+      const l = Math.hypot(nx, ny, nz) || 1;
+      if (nz < 0) { nx = -nx; ny = -ny; nz = -nz; }
+      return g.v(q[0], q[1], q[2], nx / l, ny / l, nz / l);
+    });
+  });
+  for (let k = 0; k < K; k++) for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    g.quad(V[k][i], V[k][j], V[k + 1][j], V[k + 1][i]);
+  }
+}
+
 function buildFrame(kit, L, F, cols, rows, info) {
   const P = L.pitch || PITCH, ow = cols * P, oh = rows * P, b = F.border, W = ow + 2 * b, H = oh + 2 * b;
   const g = kit.b('frame'), cl = 0.15;
   kit.setM(null);
   if (F.style === 'roof') {
-    /* EDIZIOdue: vier leicht geneigte Flächen mit Gehrungslinien in den Ecken */
-    const a = ow / 2 + cl, bb = oh / 2 + cl, hO = F.hOut, hI = F.hIn, er = F.er, rc = F.rc, rr = rc - er;
-    const Co = cRRect(W, H, rc), pr = [];
-    parc(pr, -er, hO - er, er, 0, H_PI, 3); wallDown(pr, F);
+    /* EDIZIOdue: weich gerundete Oberseite, aussen steiler, zur Öffnung flach auslaufend */
+    const a = ow / 2 + cl, bb = oh / 2 + cl, hO = F.hOut, hI = F.hIn, er = F.er, rc = F.rc;
+    const Co = cRRect(W, H, rc, 1), pr = [];
+    parc(pr, -er, hO - er, er, 0, H_PI, 4); wallDown(pr, F);
     g.loft(Co, pr);
-    const slope = (hI - hO) / (b - cl - er), nl = Math.hypot(slope, 1), ccx = W / 2 - rc, ccy = H / 2 - rc, K = 4;
-    [
-      { n: [1, 0], i0: [a, -bb], i1: [a, bb], c0: [ccx, -ccy], c1: [ccx, ccy], a0: -PI / 4 },
-      { n: [0, 1], i0: [a, bb], i1: [-a, bb], c0: [ccx, ccy], c1: [-ccx, ccy], a0: PI / 4 },
-      { n: [-1, 0], i0: [-a, bb], i1: [-a, -bb], c0: [-ccx, ccy], c1: [-ccx, -ccy], a0: 3 * PI / 4 },
-      { n: [0, -1], i0: [-a, -bb], i1: [a, -bb], c0: [-ccx, -ccy], c1: [ccx, -ccy], a0: 5 * PI / 4 }
-    ].forEach(function (s) {
-      const nx = s.n[0] * slope / nl, ny = s.n[1] * slope / nl, nz = 1 / nl, outer = [];
-      for (let k = 0; k <= K; k++) { const an = s.a0 + k / K * PI / 4; outer.push([s.c0[0] + rr * Math.cos(an), s.c0[1] + rr * Math.sin(an)]); }
-      for (let k = 0; k <= K; k++) { const an = s.a0 + PI / 4 + k / K * PI / 4; outer.push([s.c1[0] + rr * Math.cos(an), s.c1[1] + rr * Math.sin(an)]); }
-      const vi0 = g.v(s.i0[0], s.i0[1], hI, nx, ny, nz), vi1 = g.v(s.i1[0], s.i1[1], hI, nx, ny, nz);
-      const vo = outer.map(function (p) { return g.v(p[0], p[1], hO, nx, ny, nz); });
-      for (let k = 0; k < K; k++) g.tri(vi0, vo[k], vo[k + 1]);
-      g.tri(vi0, vo[K], vo[K + 1]); g.tri(vi0, vo[K + 1], vi1);
-      for (let k = K + 1; k < vo.length - 1; k++) g.tri(vi1, vo[k], vo[k + 1]);
-    });
-    const Ci = cRRect(2 * a, 2 * bb, 0);
+    const Ci = cRRect(2 * a, 2 * bb, L.insert.r + cl, 1);
+    cushion(g, cOff(Co, -er), Ci, hO, hI, 8);
     g.loft(Ci, [[0, hI, -1, 0], [0, hI - 5, -1, 0]]);
   } else if (F.style === 'pillow') {
     /* STANDARDdue: eine Platte mit runden Ausschnitten */
