@@ -67,7 +67,7 @@ class IB {
   constructor(kit, L, M, top, slot, opt) {
     opt = opt || {};
     this.kit = kit; this.L = L; this.M0 = M; this.top = top; this.slot = slot || {};
-    this.op = opt.op || 'druck'; this.lidOpen = opt.lid !== 'zu';
+    this.op = opt.op || 'druck'; this.lidOpen = opt.lid !== 'zu'; this.flush = !!opt.flush;
     this.wells = []; this.cuts = []; this.parts = []; this.big = false;
   }
   get flip() { return this.slot.flip ? -1 : 1; }
@@ -148,7 +148,7 @@ class IB {
   collar(R) {
     const self = this, L = this.L;
     this.part(function () {
-      const kit = self.kit, top = self.top, gb = kit.b('body'), hC = 6.5, t = 2.6, pr = [];
+      const kit = self.kit, top = self.top, gb = kit.b('body'), hC = self.flush ? 4.2 : 6.5, t = 2.6, pr = [];
       pr.push([3.2, top, 1, 0], [3.2, top + 0.9, 1, 0], [2.7, top + 1.4, 0, 1], [0, top + 1.4, 0, 1], [0, top + 1.4, 1, 0], [0, top + hC - 0.6, 1, 0]);
       parc(pr, -0.6, top + hC - 0.6, 0.6, H_PI, 0, 3);
       pr.push([-t + 0.6, top + hC, 0, 1]);
@@ -479,7 +479,7 @@ function wallDown(pr, F) {
 function cushion(g, C0, C1, z0, z1, K) {
   const n = C0.length, P = [];
   for (let k = 0; k <= K; k++) {
-    const t = k / K, z = z0 + (z1 - z0) * (1 - (1 - t) * (1 - t)), row = [];
+    const t = k / K, z = z0 + (z1 - z0) * t * t * (3 - 2 * t), row = [];
     for (let i = 0; i < n; i++) row.push([C0[i].x + (C1[i].x - C0[i].x) * t, C0[i].y + (C1[i].y - C0[i].y) * t, z]);
     P.push(row);
   }
@@ -561,7 +561,7 @@ function buildFrame(kit, L, F, cols, rows, info) {
 const ROW_GAP = 14;
 /* ganze Reihe: jeder Rahmen mit seinen Einsätzen, nebeneinander und mittig auf der Wand */
 function buildRow(kit, cfg) {
-  const L = cfg.L, F = cfg.F, P = L.pitch || PITCH, top = frameTop(F) + L.insert.proud, opt = { op: cfg.op, lid: cfg.lid };
+  const L = cfg.L, F = cfg.F, P = L.pitch || PITCH, top = frameTop(F) + L.insert.proud, opt = { op: cfg.op, lid: cfg.lid, flush: cfg.mount === 'nup' };
   const sz = cfg.frames.map(function (f) { return { W: f.cols * P + 2 * F.border, H: f.rows * P + 2 * F.border }; });
   const TW = sz.reduce(function (s, d) { return s + d.W; }, 0) + ROW_GAP * (sz.length - 1), frames = [];
   let x = -TW / 2;

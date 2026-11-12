@@ -123,7 +123,7 @@ function plastic(hex, finish) {
   let m;
   if (finish === 'metallic') m = new T.MeshPhysicalMaterial({ color: hex, roughness: 0.38, metalness: 0.75, clearcoat: 0.3, clearcoatRoughness: 0.2 });
   else {
-    const f = finish === 'lacquer' ? [0.14, 1, 0.04] : finish === 'gloss' ? [0.24, 0.6, 0.08] : finish === 'matte' ? [0.6, 0, 0] : [0.4, 0.25, 0.25];
+    const f = finish === 'lacquer' ? [0.3, 0.4, 0.18] : finish === 'gloss' ? [0.24, 0.6, 0.08] : finish === 'matte' ? [0.6, 0, 0] : [0.4, 0.25, 0.25];
     m = new T.MeshPhysicalMaterial({ color: hex, roughness: f[0], metalness: 0, clearcoat: f[1], clearcoatRoughness: f[2] });
   }
   return MAT[id] = setEnv(m, 1);
