@@ -1,0 +1,135 @@
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand">
+      <span class="wires" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div class="brand-txt">
+        <h1>Kombi-Planer</h1>
+        <p>Schalter und Steckdosen im Schweizer Raster zusammenstellen</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="btn" id="btnRandom" type="button"><span class="lg">Zufallskombination</span><span class="sm">Zufall</span></button>
+      <button class="btn primary" id="btnSave" type="button"><span class="lg">Bild speichern</span><span class="sm">Bild</span></button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="stage" id="stage" aria-label="Vorschau der Kombination">
+      <canvas id="view" aria-label="Berechnetes Bild der Kombination an der Wand"></canvas>
+      <svg id="overlay" aria-hidden="true"><polygon id="ovHover" style="display:none"></polygon><polygon id="ovSel" style="display:none"></polygon></svg>
+      <div class="chip tl" id="chipLine"></div>
+      <div class="chip bl" id="chipDims"></div>
+      <div class="viewbtns" role="group" aria-label="Ansicht">
+        <button type="button" id="vFront">Frontal</button>
+        <button type="button" id="vSide">Schräg</button>
+        <button type="button" id="vClose">Nah</button>
+      </div>
+      <div class="progress" id="progress" aria-hidden="true"><i></i></div>
+      <p class="nogl" id="nogl" hidden>Die 3D-Vorschau braucht WebGL. In diesem Browser ist es nicht verfügbar – die Zusammenstellung und die Stückliste funktionieren trotzdem.</p>
+    </section>
+
+    <aside class="panel" id="panel" aria-label="Konfiguration">
+      <nav class="steps" aria-label="Abschnitte">
+        <button type="button" data-go="secLine">Linie</button>
+        <button type="button" data-go="secColor">Farbe</button>
+        <button type="button" data-go="secSize">Grösse</button>
+        <button type="button" data-go="secFill">Bestückung</button>
+        <button type="button" data-go="secEnv">Wand</button>
+        <button type="button" data-go="secList">Stückliste</button>
+      </nav>
+
+      <section class="sec" id="secLine">
+        <h2>Bauart und Designlinie</h2>
+        <div class="seg two" id="mounts" role="group" aria-label="Montageart"></div>
+        <p class="help" id="mountNote"></p>
+        <div class="lines" id="lines"></div>
+      </section>
+
+      <section class="sec" id="secColor">
+        <h2>Farbe und Material</h2>
+        <div class="row-h"><span class="lbl" id="frameLbl">Rahmen</span><span class="val" id="frameName"></span></div>
+        <div class="swatches" id="swFrame" role="group" aria-label="Farbe von Rahmen oder Gehäuse"></div>
+        <div class="row-h"><span class="lbl">Einsätze</span><span class="val" id="insName"></span></div>
+        <div class="swatches" id="swIns" role="group" aria-label="Farbe der Einsätze"></div>
+        <label class="check"><input type="checkbox" id="chkLink"> <span id="linkLbl">Einsätze in der Rahmenfarbe</span></label>
+        <p class="help" id="oldNote" hidden>Mit Punkt markierte Farben führt Feller seit April 2024 nicht mehr im Sortiment.</p>
+      </section>
+
+      <section class="sec" id="secSize">
+        <h2>Grösse</h2>
+        <div class="sizewrap">
+          <div class="sizegrid" id="sizegrid" role="group" aria-label="Anzahl Felder"></div>
+          <div class="sizeinfo">
+            <strong id="sizeMain"></strong>
+            <span id="sizeDims"></span>
+            <span class="help" id="sizeNote"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="secFill">
+        <h2>Bestückung</h2>
+        <div class="fillhead">
+          <div class="minimap" id="minimap" role="group" aria-label="Felder der Kombination"></div>
+          <div class="slotbar">
+            <div class="slotname" id="slotName"></div>
+            <div class="slotbtns">
+              <button class="btn sm" id="btnRot" type="button">Drehen 90°</button>
+              <button class="btn sm" id="btnFlip" type="button">Wippe umlegen</button>
+              <button class="btn sm" id="btnAll" type="button">Für alle Felder</button>
+            </div>
+          </div>
+        </div>
+        <div class="row-h"><span class="lbl">Bedienart</span><span class="val" id="opName"></span></div>
+        <div class="seg" id="ops" role="group" aria-label="Bedienart der Schalter und Taster"></div>
+        <div class="lidrow" id="lidRow" hidden>
+          <div class="row-h"><span class="lbl">Klappdeckel</span></div>
+          <div class="seg" id="lids" role="group" aria-label="Klappdeckel offen oder geschlossen"></div>
+        </div>
+        <div class="row-h"><span class="lbl">Einsatz wählen</span></div>
+        <div class="cats" id="cats" role="group" aria-label="Kategorie"></div>
+        <input type="search" id="q" placeholder="Suchen, z. B. T23, Storen, RJ45" aria-label="Einsätze durchsuchen" autocomplete="off">
+        <div class="items" id="items"></div>
+        <p class="help" id="noItems" hidden>Kein Einsatz passt zu dieser Suche.</p>
+      </section>
+
+      <section class="sec" id="secEnv">
+        <h2>Wand und Licht</h2>
+        <div class="row-h"><span class="lbl">Wand</span></div>
+        <div class="seg" id="walls" role="group" aria-label="Wandoberfläche"></div>
+        <div class="swatches" id="paints" role="group" aria-label="Wandfarbe"></div>
+        <div class="row-h"><span class="lbl">Licht</span></div>
+        <div class="seg" id="lights" role="group" aria-label="Lichtstimmung"></div>
+      </section>
+
+      <section class="sec" id="secList">
+        <h2>Stückliste</h2>
+        <ul class="parts" id="parts"></ul>
+        <button class="btn sm" id="btnCopy" type="button">Stückliste kopieren</button>
+        <p class="legal">Unabhängiges Planungswerkzeug, nicht von Feller, Hager oder ABB. Marken- und Produktnamen gehören den jeweiligen Herstellern. Rastermass, Rahmengrössen und Steckbilder folgen den Herstellerangaben und der Norm SN 441011; Details der Formen sowie die Masse der Aufputz- und Nass-Gehäuse sind nachgebaut und können vom Original abweichen. Farben und Verfügbarkeit vor der Bestellung im aktuellen Katalog prüfen.</p>
+      </section>
+    </aside>
+  </main>
+
+  <nav class="tabbar" id="tabbar" aria-label="Bereiche">
+    <button type="button" data-tab="secLine"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="8.5" y="8.5" width="7" height="7" rx="1"/></svg><span>Linie</span></button>
+    <button type="button" data-tab="secColor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5c3.2 3.8 5.5 6.6 5.5 9.6a5.5 5.5 0 0 1-11 0c0-3 2.3-5.8 5.5-9.6z"/></svg><span>Farbe</span></button>
+    <button type="button" data-tab="secSize"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1" stroke-dasharray="2 2"/></svg><span>Grösse</span></button>
+    <button type="button" data-tab="secFill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.8 12l4.4-5.4h9.6l4.4 5.4-4.4 5.4H7.2z"/><circle cx="8.8" cy="11.4" r="1" class="dot"/><circle cx="15.2" cy="11.4" r="1" class="dot"/><circle cx="12" cy="14.2" r="1" class="dot"/></svg><span>Einsätze</span></button>
+    <button type="button" data-tab="secEnv"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.6"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M5.6 18.4l1.7-1.7M16.7 7.3l1.7-1.7"/></svg><span>Wand</span></button>
+    <button type="button" data-tab="secList"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><circle cx="4.8" cy="6.5" r="1" class="dot"/><circle cx="4.8" cy="12" r="1" class="dot"/><circle cx="4.8" cy="17.5" r="1" class="dot"/></svg><span>Liste</span></button>
+  </nav>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <h2 id="modalTitle">Bild der Kombination</h2>
+      <button class="btn sm" id="modalClose" type="button">Schliessen</button>
+    </div>
+    <img id="modalImg" alt="Berechnetes Bild der Kombination">
+    <p class="help" id="modalHint">Zum Sichern: Rechtsklick oder langes Drücken auf das Bild und «Bild speichern» wählen.</p>
+    <a class="btn primary" id="modalLink" hidden>Als PNG herunterladen</a>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>

@@ -1,0 +1,2710 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kombi-Planer – Schweizer Schalter und Steckdosen in 3D zusammenstellen</title>
+<meta name="description" content="Kostenloser 3D-Konfigurator für Schweizer Schalter- und Steckdosen-Kombinationen: Feller EDIZIOdue, EDIZIO.liv, STANDARDdue und NEVO, Hager kallysto und robusto, ABB Sidus. Unterputz, Aufputz, NUP und NAP, Steckdosen T13 bis T25, als fotorealistisches Bild mit Stückliste.">
+<meta name="theme-color" content="#f5f6f6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#171b1e" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Kombi-Planer">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kombi-Planer – Schweizer Schalter und Steckdosen in 3D">
+<meta property="og:description" content="Kostenloser 3D-Konfigurator für Schweizer Schalter- und Steckdosen-Kombinationen: Feller EDIZIOdue, EDIZIO.liv, STANDARDdue und NEVO, Hager kallysto und robusto, ABB Sidus. Unterputz, Aufputz, NUP und NAP, Steckdosen T13 bis T25, als fotorealistisches Bild mit Stückliste.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230e63cc'/%3E%3Cpath d='M4.5 16l5.5-7h12l5.5 7-5.5 7H10z' fill='%23fff'/%3E%3Ccircle cx='12' cy='15' r='1.8' fill='%230e63cc'/%3E%3Ccircle cx='20' cy='15' r='1.8' fill='%230e63cc'/%3E%3Ccircle cx='16' cy='19.2' r='1.8' fill='%230e63cc'/%3E%3C/svg%3E">
+<style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600&display=swap">
+<style>
+/* Layout: am Desktop links die Bühne mit dem berechneten Bild, rechts die Werkbank. Am Handy Bild oben, Werkbank darunter, Bereiche über die Tab-Leiste unten. */
+:root{
+  --bg:#e6e9eb; --panel:#f5f6f6; --card:#ffffff; --ink:#13171b; --ink-2:#46515a; --ink-3:#6c7882;
+  --line:#d3d8dc; --line-2:#b4bcc3; --accent:#0e63cc; --accent-ink:#ffffff; --accent-soft:#dbe8fa;
+  --glass:rgba(245,246,246,.88); --scrim:rgba(15,18,20,.55);
+  --shadow:0 1px 2px rgba(19,23,27,.08),0 8px 24px rgba(19,23,27,.10);
+  --stage:#d6d3cc; --old:#9a5700; --thumb:#d7dbde;
+  --wire-l:#7a4a26; --wire-n:#2f8fe6; --wire-pe1:#f0cc1c; --wire-pe2:#3a9a3f;
+  --font-d:"Barlow Semi Condensed","Barlow","Arial Narrow","Segoe UI",system-ui,sans-serif;
+  --font-b:"Barlow","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1214; --panel:#171b1e; --card:#1f2428; --ink:#edf0f2; --ink-2:#b5bec5; --ink-3:#8a959e;
+    --line:#2b3237; --line-2:#414b53; --accent:#62abff; --accent-ink:#06121f; --accent-soft:#17304d;
+    --glass:rgba(23,27,30,.84); --scrim:rgba(0,0,0,.66);
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);
+    --stage:#2a2c2e; --old:#e3a651; --thumb:#3b4147; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1214; --panel:#171b1e; --card:#1f2428; --ink:#edf0f2; --ink-2:#b5bec5; --ink-3:#8a959e;
+  --line:#2b3237; --line-2:#414b53; --accent:#62abff; --accent-ink:#06121f; --accent-soft:#17304d;
+  --glass:rgba(23,27,30,.84); --scrim:rgba(0,0,0,.66);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);
+  --stage:#2a2c2e; --old:#e3a651; --thumb:#3b4147; color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+h1,h2,h3,p,ul{margin:0}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr)}
+
+/* Kopfzeile */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px 20px;padding-block:10px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.wires{display:flex;gap:3px;flex:none}
+.wires i{display:block;width:5px;height:26px;border-radius:2px}
+.wires i:nth-child(1){background:var(--wire-l)}
+.wires i:nth-child(2){background:var(--wire-n)}
+.wires i:nth-child(3){background:repeating-linear-gradient(135deg,var(--wire-pe1) 0 4px,var(--wire-pe2) 4px 8px)}
+.brand-txt{min-width:0}
+.brand h1{font-family:var(--font-d);font-weight:600;font-size:23px;line-height:1.1;letter-spacing:.01em;white-space:nowrap}
+.brand p{font-size:13px;color:var(--ink-3)}
+.top-actions{display:flex;gap:8px;flex:none}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:6px 14px;border:1px solid var(--line-2);border-radius:6px;
+  background:var(--card);color:var(--ink);font-weight:500;text-decoration:none;transition:background .15s,border-color .15s}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.sm{min-height:32px;padding:3px 10px;font-size:13.5px}
+.btn:disabled{opacity:.45;cursor:default}
+.btn .sm{display:none}
+
+/* Hauptbereich */
+.main{display:grid;grid-template-columns:minmax(0,1fr) 430px;min-height:0}
+.stage{position:relative;min-height:0;overflow:hidden;background:var(--stage)}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none}
+#overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#overlay polygon{transition:opacity .6s}
+#overlay.idle polygon{opacity:0}
+#ovSel{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round}
+#ovHover{fill:rgba(255,255,255,.14);stroke:rgba(255,255,255,.85);stroke-width:1.5;stroke-dasharray:5 4;stroke-linejoin:round}
+.chip{position:absolute;max-width:calc(100% - 24px);padding:5px 10px;border-radius:6px;background:var(--glass);color:var(--ink);
+  font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;box-shadow:var(--shadow);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none}
+.chip.tl{top:12px;left:max(12px,env(safe-area-inset-left,0px))}
+.chip.bl{bottom:14px;left:max(12px,env(safe-area-inset-left,0px))}
+.viewbtns{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:14px;display:flex;border-radius:6px;overflow:hidden;box-shadow:var(--shadow)}
+.viewbtns button{border:0;border-right:1px solid var(--line);padding:6px 11px;background:var(--glass);font-size:13px;font-weight:500;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.viewbtns button:last-child{border-right:0}
+.viewbtns button:hover{color:var(--accent)}
+.progress{position:absolute;left:0;right:0;bottom:0;height:3px;opacity:0;transition:opacity .5s .2s}
+.progress.on{opacity:1;transition:none}
+.progress i{display:block;height:100%;width:0;background:var(--accent)}
+.nogl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:var(--ink-2);background:var(--stage)}
+
+/* Werkbank */
+.panel{min-height:0;overflow-y:auto;background:var(--panel);border-left:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 28px}
+.steps{position:sticky;top:0;z-index:3;display:flex;gap:2px;margin:0 -4px;padding:8px 0;background:var(--panel);overflow-x:auto;scrollbar-width:none}
+.steps button{flex:none;border:0;background:none;padding:4px 8px;border-radius:5px;font-family:var(--font-d);font-size:14px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3)}
+.steps button:hover{color:var(--ink);background:var(--line)}
+.sec{padding:16px 0 18px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;scroll-margin-top:44px}
+.sec h2{font-family:var(--font-d);font-weight:600;font-size:14px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2)}
+.help{font-size:13px;color:var(--ink-3)}
+.row-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.lbl{font-weight:600;font-size:14px;flex:none}
+.val{font-size:13px;color:var(--ink-2);text-align:right;min-width:0}
+
+/* Auswahlknöpfe */
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--line-2);border-radius:6px;padding:5px 11px;background:var(--card);font-size:13.5px;min-width:0}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.seg.two{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.seg.two button{display:flex;flex-direction:column;align-items:flex-start;padding:6px 9px;text-align:left}
+.seg.two b{font-weight:600;font-size:14px;line-height:1.2}
+.seg.two small{font-size:11.5px;color:var(--ink-3);line-height:1.2;white-space:nowrap}
+
+/* Designlinien */
+.lines{display:flex;flex-direction:column;gap:12px}
+.brandrow{display:flex;flex-direction:column;gap:6px}
+.brandrow h3{font-family:var(--font-d);font-size:13px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.linegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.linecard{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;padding:8px 10px;text-align:left;
+  border:1px solid var(--line);border-radius:8px;background:var(--card);transition:border-color .15s}
+.linecard:hover{border-color:var(--line-2)}
+.linecard[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+.linecard svg{display:block;width:36px;height:36px;color:var(--ink-2)}
+.linecard b{display:block;font-weight:600;font-size:15px;line-height:1.2}
+.linecard small{display:block;font-size:12.5px;color:var(--ink-3);line-height:1.25}
+
+/* Farben */
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw{position:relative;width:32px;height:32px;padding:0;border-radius:50%;border:1px solid var(--line-2);background:var(--card)}
+.sw[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:2px}
+.sw.old::after{content:"";position:absolute;right:-1px;top:-1px;width:9px;height:9px;border-radius:50%;background:var(--old);border:2px solid var(--panel)}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-2)}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+
+/* Grösse */
+.sizewrap{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.sizegrid{display:grid;grid-template-columns:repeat(4,30px);gap:4px}
+.sizegrid button{width:30px;height:30px;padding:0;border:1px solid var(--line-2);border-radius:4px;background:var(--card)}
+.sizegrid button.in{background:var(--accent-soft);border-color:var(--accent)}
+.sizegrid button.hov{border-color:var(--accent)}
+.sizegrid button:disabled{border-style:dashed;opacity:.35;cursor:default}
+.sizeinfo{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 160px}
+.sizeinfo strong{font-family:var(--font-d);font-size:20px;font-weight:600;line-height:1.15}
+.sizeinfo span{font-variant-numeric:tabular-nums}
+#sizeDims{color:var(--ink-2)}
+
+/* Bestückung */
+.fillhead{display:flex;flex-direction:column;gap:10px}
+.minimap{display:grid;grid-template-columns:repeat(var(--c,2),var(--cell,72px));gap:5px;padding:8px;width:fit-content;max-width:100%;border:1px solid var(--line);border-radius:8px;background:var(--card);flex:none}
+.cell{position:relative;aspect-ratio:1;padding:0;border:1px solid var(--line);border-radius:5px;background:var(--thumb);overflow:hidden}
+.cell canvas{display:block;width:100%;height:100%}
+.cell span{position:absolute;left:3px;top:1px;font-size:11px;font-weight:600;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.cell[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.slotbar{display:flex;flex-direction:column;gap:6px;min-width:0}
+.slotname{font-size:14px}
+.slotname b{font-weight:600}
+.slotbtns{display:flex;flex-wrap:wrap;gap:6px}
+.lidrow{display:flex;flex-direction:column;gap:10px}
+.cats{display:flex;flex-wrap:wrap;gap:5px}
+.cats button{border:1px solid var(--line-2);border-radius:99px;padding:3px 10px;background:none;font-size:13px;color:var(--ink-2);white-space:nowrap}
+.cats button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+#q{width:100%;min-height:36px;padding:6px 10px;border:1px solid var(--line-2);border-radius:6px;background:var(--card)}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:6px}
+.item{display:grid;grid-template-columns:52px minmax(0,1fr);align-items:center;gap:9px;padding:5px 8px 5px 5px;text-align:left;
+  border:1px solid var(--line);border-radius:8px;background:var(--card);min-height:64px}
+.item:hover{border-color:var(--line-2)}
+.item.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+.item canvas{display:block;width:52px;height:52px;border-radius:4px;background:var(--thumb)}
+.item b{display:block;font-weight:600;font-size:13.5px;line-height:1.2;overflow-wrap:anywhere}
+.item small{display:block;font-size:12px;color:var(--ink-3);line-height:1.25}
+
+/* Stückliste */
+.parts{list-style:none;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.parts li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:6px;padding:8px 10px;border-top:1px solid var(--line);font-size:14px}
+.parts li:first-child{border-top:0}
+.parts .n{font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.parts small{display:block;color:var(--ink-3);font-size:12.5px}
+#btnCopy{align-self:flex-start}
+.legal{padding-top:12px;font-size:12px;line-height:1.45;color:var(--ink-3)}
+
+/* Tab-Leiste: nur am Handy */
+.tabbar{display:none}
+
+/* Bild-Dialog und Hinweis */
+.modal{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:var(--scrim);
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal-box{display:flex;flex-direction:column;gap:10px;max-width:min(920px,100%);max-height:100%;padding:14px;border-radius:10px;background:var(--panel);box-shadow:var(--shadow);overflow:auto}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.modal-head h2{font-family:var(--font-d);font-size:18px;font-weight:600}
+.modal-box img{display:block;max-width:100%;height:auto;border-radius:6px}
+.modal-box .btn{align-self:flex-start}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;width:max-content;max-width:calc(100% - 32px);
+  padding:10px 14px;border-radius:8px;background:var(--ink);color:var(--panel);font-size:14px;box-shadow:var(--shadow)}
+
+/* Handy und schmale Fenster: eine Bildschirmhöhe, Bild oben, ein Bereich nach dem anderen */
+@media (max-width:900px){
+  .app{display:flex;flex-direction:column}
+  .top{flex:none;padding-block:7px}
+  .brand p{display:none}
+  .brand h1{font-size:20px}
+  .wires i{height:22px}
+  .btn .lg{display:none}
+  .btn .sm{display:inline}
+  .top .btn{min-height:40px;padding:6px 14px}
+  .main{flex:1;min-height:0;display:flex;flex-direction:column}
+  .stage{flex:none;height:38vh;height:38svh;min-height:200px}
+  .chip.tl{display:none}
+  .chip.bl{bottom:10px;font-size:12.5px}
+  .viewbtns{bottom:10px}
+  .viewbtns button{padding:9px 12px;font-size:14px}
+  .panel{flex:1;min-height:0;border-left:0;padding-block:0 18px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  .steps{display:none}
+  .sec{display:none;border-top:0;padding:14px 0 4px;gap:12px}
+  .sec.active{display:flex}
+  .sec h2{font-size:15px}
+  .btn.sm{min-height:40px;padding:6px 12px;font-size:14px}
+  .seg{gap:8px}
+  .seg button{min-height:44px;padding:8px 14px;font-size:15px}
+  .seg.two{grid-template-columns:1fr 1fr}
+  .seg.two button{padding:8px 12px}
+  .seg.two b{font-size:15px}
+  .linegrid{grid-template-columns:1fr 1fr}
+  .linecard{min-height:60px;padding:8px}
+  .linecard svg{width:32px;height:32px}
+  .swatches{gap:10px}
+  .sw{width:40px;height:40px}
+  .check{font-size:15px;min-height:40px}
+  .sizegrid{grid-template-columns:repeat(4,44px);gap:6px}
+  .sizegrid button{width:44px;height:44px;border-radius:6px}
+  .fillhead{position:sticky;top:0;z-index:2;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"m n" "b b";align-items:center;gap:8px 12px;
+    margin-top:-14px;padding:12px 0 10px;background:var(--panel);border-bottom:1px solid var(--line)}
+  .fillhead .slotbar{display:contents}
+  .fillhead .minimap{grid-area:m;padding:6px}
+  .fillhead .slotname{grid-area:n;font-size:15px}
+  .fillhead .slotbtns{grid-area:b;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .fillhead .slotbtns .btn{padding:6px 4px;font-size:13.5px;white-space:nowrap}
+  .cats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px;gap:6px}
+  .cats::-webkit-scrollbar{display:none}
+  .cats button{flex:none;min-height:38px;padding:6px 14px;font-size:14px}
+  #q{min-height:44px;font-size:16px}
+  .items{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .item{grid-template-columns:48px minmax(0,1fr);gap:8px;min-height:62px}
+  .item canvas{width:48px;height:48px}
+  .parts li{font-size:15px}
+  .tabbar{display:flex;flex:none;background:var(--panel);border-top:1px solid var(--line);
+    padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .tabbar button{flex:1 1 0;min-width:0;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    border:0;background:none;color:var(--ink-3);font-size:11.5px;font-weight:500}
+  .tabbar svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .tabbar .dot{fill:currentColor;stroke:none}
+  .tabbar button[aria-selected="true"]{color:var(--accent)}
+  .tabbar button[aria-selected="true"] span{font-weight:600}
+  .toast{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+}
+/* Handy quer: Bild links, Werkbank rechts */
+@media (max-width:900px) and (orientation:landscape) and (max-height:520px){
+  .main{flex-direction:row}
+  .stage{height:auto;flex:0 0 52%}
+  .panel{border-left:1px solid var(--line)}
+  .tabbar button{min-height:44px;flex-direction:row;gap:6px}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand">
+      <span class="wires" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div class="brand-txt">
+        <h1>Kombi-Planer</h1>
+        <p>Schalter und Steckdosen im Schweizer Raster zusammenstellen</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="btn" id="btnRandom" type="button"><span class="lg">Zufallskombination</span><span class="sm">Zufall</span></button>
+      <button class="btn primary" id="btnSave" type="button"><span class="lg">Bild speichern</span><span class="sm">Bild</span></button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="stage" id="stage" aria-label="Vorschau der Kombination">
+      <canvas id="view" aria-label="Berechnetes Bild der Kombination an der Wand"></canvas>
+      <svg id="overlay" aria-hidden="true"><polygon id="ovHover" style="display:none"></polygon><polygon id="ovSel" style="display:none"></polygon></svg>
+      <div class="chip tl" id="chipLine"></div>
+      <div class="chip bl" id="chipDims"></div>
+      <div class="viewbtns" role="group" aria-label="Ansicht">
+        <button type="button" id="vFront">Frontal</button>
+        <button type="button" id="vSide">Schräg</button>
+        <button type="button" id="vClose">Nah</button>
+      </div>
+      <div class="progress" id="progress" aria-hidden="true"><i></i></div>
+      <p class="nogl" id="nogl" hidden>Die 3D-Vorschau braucht WebGL. In diesem Browser ist es nicht verfügbar – die Zusammenstellung und die Stückliste funktionieren trotzdem.</p>
+    </section>
+
+    <aside class="panel" id="panel" aria-label="Konfiguration">
+      <nav class="steps" aria-label="Abschnitte">
+        <button type="button" data-go="secLine">Linie</button>
+        <button type="button" data-go="secColor">Farbe</button>
+        <button type="button" data-go="secSize">Grösse</button>
+        <button type="button" data-go="secFill">Bestückung</button>
+        <button type="button" data-go="secEnv">Wand</button>
+        <button type="button" data-go="secList">Stückliste</button>
+      </nav>
+
+      <section class="sec" id="secLine">
+        <h2>Bauart und Designlinie</h2>
+        <div class="seg two" id="mounts" role="group" aria-label="Montageart"></div>
+        <p class="help" id="mountNote"></p>
+        <div class="lines" id="lines"></div>
+      </section>
+
+      <section class="sec" id="secColor">
+        <h2>Farbe und Material</h2>
+        <div class="row-h"><span class="lbl" id="frameLbl">Rahmen</span><span class="val" id="frameName"></span></div>
+        <div class="swatches" id="swFrame" role="group" aria-label="Farbe von Rahmen oder Gehäuse"></div>
+        <div class="row-h"><span class="lbl">Einsätze</span><span class="val" id="insName"></span></div>
+        <div class="swatches" id="swIns" role="group" aria-label="Farbe der Einsätze"></div>
+        <label class="check"><input type="checkbox" id="chkLink"> <span id="linkLbl">Einsätze in der Rahmenfarbe</span></label>
+        <p class="help" id="oldNote" hidden>Mit Punkt markierte Farben führt Feller seit April 2024 nicht mehr im Sortiment.</p>
+      </section>
+
+      <section class="sec" id="secSize">
+        <h2>Grösse</h2>
+        <div class="sizewrap">
+          <div class="sizegrid" id="sizegrid" role="group" aria-label="Anzahl Felder"></div>
+          <div class="sizeinfo">
+            <strong id="sizeMain"></strong>
+            <span id="sizeDims"></span>
+            <span class="help" id="sizeNote"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="secFill">
+        <h2>Bestückung</h2>
+        <div class="fillhead">
+          <div class="minimap" id="minimap" role="group" aria-label="Felder der Kombination"></div>
+          <div class="slotbar">
+            <div class="slotname" id="slotName"></div>
+            <div class="slotbtns">
+              <button class="btn sm" id="btnRot" type="button">Drehen 90°</button>
+              <button class="btn sm" id="btnFlip" type="button">Wippe umlegen</button>
+              <button class="btn sm" id="btnAll" type="button">Für alle Felder</button>
+            </div>
+          </div>
+        </div>
+        <div class="row-h"><span class="lbl">Bedienart</span><span class="val" id="opName"></span></div>
+        <div class="seg" id="ops" role="group" aria-label="Bedienart der Schalter und Taster"></div>
+        <div class="lidrow" id="lidRow" hidden>
+          <div class="row-h"><span class="lbl">Klappdeckel</span></div>
+          <div class="seg" id="lids" role="group" aria-label="Klappdeckel offen oder geschlossen"></div>
+        </div>
+        <div class="row-h"><span class="lbl">Einsatz wählen</span></div>
+        <div class="cats" id="cats" role="group" aria-label="Kategorie"></div>
+        <input type="search" id="q" placeholder="Suchen, z. B. T23, Storen, RJ45" aria-label="Einsätze durchsuchen" autocomplete="off">
+        <div class="items" id="items"></div>
+        <p class="help" id="noItems" hidden>Kein Einsatz passt zu dieser Suche.</p>
+      </section>
+
+      <section class="sec" id="secEnv">
+        <h2>Wand und Licht</h2>
+        <div class="row-h"><span class="lbl">Wand</span></div>
+        <div class="seg" id="walls" role="group" aria-label="Wandoberfläche"></div>
+        <div class="swatches" id="paints" role="group" aria-label="Wandfarbe"></div>
+        <div class="row-h"><span class="lbl">Licht</span></div>
+        <div class="seg" id="lights" role="group" aria-label="Lichtstimmung"></div>
+      </section>
+
+      <section class="sec" id="secList">
+        <h2>Stückliste</h2>
+        <ul class="parts" id="parts"></ul>
+        <button class="btn sm" id="btnCopy" type="button">Stückliste kopieren</button>
+        <p class="legal">Unabhängiges Planungswerkzeug, nicht von Feller, Hager oder ABB. Marken- und Produktnamen gehören den jeweiligen Herstellern. Rastermass, Rahmengrössen und Steckbilder folgen den Herstellerangaben und der Norm SN 441011; Details der Formen sowie die Masse der Aufputz- und Nass-Gehäuse sind nachgebaut und können vom Original abweichen. Farben und Verfügbarkeit vor der Bestellung im aktuellen Katalog prüfen.</p>
+      </section>
+    </aside>
+  </main>
+
+  <nav class="tabbar" id="tabbar" aria-label="Bereiche">
+    <button type="button" data-tab="secLine"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="8.5" y="8.5" width="7" height="7" rx="1"/></svg><span>Linie</span></button>
+    <button type="button" data-tab="secColor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5c3.2 3.8 5.5 6.6 5.5 9.6a5.5 5.5 0 0 1-11 0c0-3 2.3-5.8 5.5-9.6z"/></svg><span>Farbe</span></button>
+    <button type="button" data-tab="secSize"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1" stroke-dasharray="2 2"/></svg><span>Grösse</span></button>
+    <button type="button" data-tab="secFill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.8 12l4.4-5.4h9.6l4.4 5.4-4.4 5.4H7.2z"/><circle cx="8.8" cy="11.4" r="1" class="dot"/><circle cx="15.2" cy="11.4" r="1" class="dot"/><circle cx="12" cy="14.2" r="1" class="dot"/></svg><span>Einsätze</span></button>
+    <button type="button" data-tab="secEnv"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.6"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M5.6 18.4l1.7-1.7M16.7 7.3l1.7-1.7"/></svg><span>Wand</span></button>
+    <button type="button" data-tab="secList"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><circle cx="4.8" cy="6.5" r="1" class="dot"/><circle cx="4.8" cy="12" r="1" class="dot"/><circle cx="4.8" cy="17.5" r="1" class="dot"/></svg><span>Liste</span></button>
+  </nav>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <h2 id="modalTitle">Bild der Kombination</h2>
+      <button class="btn sm" id="modalClose" type="button">Schliessen</button>
+    </div>
+    <img id="modalImg" alt="Berechnetes Bild der Kombination">
+    <p class="help" id="modalHint">Zum Sichern: Rechtsklick oder langes Drücken auf das Bild und «Bild speichern» wählen.</p>
+    <a class="btn primary" id="modalLink" hidden>Als PNG herunterladen</a>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<noscript><p style="padding:16px">Der Kombi-Planer braucht JavaScript: Schalter und Steckdosen von Feller, Hager und ABB im Schweizer Raster zusammenstellen und als 3D-Bild ansehen.</p></noscript>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+<script>
+(function () {
+'use strict';
+/* ================================================================
+   01 · Geometrie-Baukasten
+   Alle Masse in Millimetern. x = rechts, y = oben, z = aus der Wand.
+   Eine Kontur ist eine Liste von Punkten {x,y,nx,ny} im Gegenuhrzeigersinn
+   mit nach aussen zeigender Normalen. Scharfe Ecken = doppelter Punkt.
+   ================================================================ */
+const T = window.THREE;
+const PI = Math.PI, H_PI = Math.PI / 2;
+
+function pt(x, y, nx, ny) { return { x: x, y: y, nx: nx, ny: ny }; }
+
+/* Polygon mit verrundeten Ecken. verts: [{x,y,r}] im Gegenuhrzeigersinn */
+function cPoly(verts, seg) {
+  seg = seg || 0.6;
+  const n = verts.length, out = [];
+  for (let i = 0; i < n; i++) {
+    const P = verts[i], A = verts[(i + n - 1) % n], B = verts[(i + 1) % n];
+    let ux = A.x - P.x, uy = A.y - P.y, vx = B.x - P.x, vy = B.y - P.y;
+    const ul = Math.hypot(ux, uy), vl = Math.hypot(vx, vy);
+    ux /= ul; uy /= ul; vx /= vl; vy /= vl;
+    const n1x = -uy, n1y = ux, n2x = vy, n2y = -vx;
+    const cross = (-ux) * vy - (-uy) * vx;
+    const ang = Math.acos(Math.max(-1, Math.min(1, n1x * n2x + n1y * n2y)));
+    const r = P.r || 0;
+    if (ang < 1e-4) { out.push(pt(P.x, P.y, n1x, n1y)); continue; }
+    if (r < 1e-6) { out.push(pt(P.x, P.y, n1x, n1y), pt(P.x, P.y, n2x, n2y)); continue; }
+    const t = r * Math.tan(ang / 2);
+    const sg = cross >= 0 ? 1 : -1;
+    const p1x = P.x + ux * t, p1y = P.y + uy * t;
+    const cx = p1x - sg * n1x * r, cy = p1y - sg * n1y * r;
+    const steps = Math.max(2, Math.ceil(ang * r / seg), Math.ceil(ang / (PI / 18)));
+    const a0 = Math.atan2(n1y, n1x);
+    for (let k = 0; k <= steps; k++) {
+      const a = a0 + sg * ang * k / steps, nx = Math.cos(a), ny = Math.sin(a);
+      out.push(pt(cx + sg * r * nx, cy + sg * r * ny, nx, ny));
+    }
+  }
+  return out;
+}
+
+function cRRect(w, h, r, seg) {
+  const a = w / 2, b = h / 2;
+  r = Math.max(0, Math.min(r, a - 1e-3, b - 1e-3));
+  return cPoly([{ x: a, y: -b, r: r }, { x: a, y: b, r: r }, { x: -a, y: b, r: r }, { x: -a, y: -b, r: r }], seg);
+}
+
+function cCircle(r, n) {
+  n = n || Math.max(20, Math.ceil(2 * PI * r / 0.7));
+  const o = [];
+  for (let i = 0; i < n; i++) {
+    const a = i / n * 2 * PI;
+    o.push(pt(r * Math.cos(a), r * Math.sin(a), Math.cos(a), Math.sin(a)));
+  }
+  return o;
+}
+
+/* Sechseck nach SN 441011: Seiten unter 45°, Spitzen leicht, Übergänge gross verrundet */
+function cHex(W, Hh, rt, rf) {
+  const xt = W / 2 + 0.4142 * rt, hh = Hh / 2, xf = xt - hh;
+  return cPoly([
+    { x: xt, y: 0, r: rt }, { x: xf, y: hh, r: rf }, { x: -xf, y: hh, r: rf },
+    { x: -xt, y: 0, r: rt }, { x: -xf, y: -hh, r: rf }, { x: xf, y: -hh, r: rf }]);
+}
+
+function cXf(C, tx, ty, rot) {
+  const c = Math.cos(rot || 0), s = Math.sin(rot || 0);
+  return C.map(function (p) {
+    return pt(p.x * c - p.y * s + tx, p.x * s + p.y * c + ty, p.nx * c - p.ny * s, p.nx * s + p.ny * c);
+  });
+}
+
+function cOff(C, d) {
+  if (!d) return C;
+  return C.map(function (p) { return pt(p.x + p.nx * d, p.y + p.ny * d, p.nx, p.ny); });
+}
+
+/* Kontur aus rohen Polygonpunkten, Normalen aus den Kanten (Knick ab ~29°) */
+function cFromPts(P, crease) {
+  crease = crease || 0.5;
+  const Q = [];
+  for (let i = 0; i < P.length; i++) {
+    const a = P[i], b = Q[Q.length - 1];
+    if (!b || Math.hypot(a.x - b.x, a.y - b.y) > 1e-4) Q.push(a);
+  }
+  if (Q.length > 1 && Math.hypot(Q[0].x - Q[Q.length - 1].x, Q[0].y - Q[Q.length - 1].y) < 1e-4) Q.pop();
+  const m = Q.length, out = [];
+  for (let i = 0; i < m; i++) {
+    const p = Q[i], a = Q[(i + m - 1) % m], b = Q[(i + 1) % m];
+    let d1x = p.x - a.x, d1y = p.y - a.y, d2x = b.x - p.x, d2y = b.y - p.y;
+    const l1 = Math.hypot(d1x, d1y), l2 = Math.hypot(d2x, d2y);
+    d1x /= l1; d1y /= l1; d2x /= l2; d2y /= l2;
+    const n1x = d1y, n1y = -d1x, n2x = d2y, n2y = -d2x;
+    const ang = Math.acos(Math.max(-1, Math.min(1, n1x * n2x + n1y * n2y)));
+    if (ang > crease) out.push(pt(p.x, p.y, n1x, n1y), pt(p.x, p.y, n2x, n2y));
+    else { const nx = n1x + n2x, ny = n1y + n2y, l = Math.hypot(nx, ny) || 1; out.push(pt(p.x, p.y, nx / l, ny / l)); }
+  }
+  return out;
+}
+
+/* Konvexe Kontur an einem Kreis (Mittelpunkt 0/0) beschneiden */
+function clipCircle(C, R, N) {
+  let needs = false;
+  for (let i = 0; i < C.length; i++) if (C[i].x * C[i].x + C[i].y * C[i].y > R * R) { needs = true; break; }
+  if (!needs) return C;
+  N = N || 90;
+  let poly = C.map(function (p) { return { x: p.x, y: p.y }; });
+  const lim = R * Math.cos(PI / N);
+  for (let i = 0; i < N && poly.length; i++) {
+    const a = (i + 0.5) / N * 2 * PI, nx = Math.cos(a), ny = Math.sin(a), out = [];
+    for (let j = 0; j < poly.length; j++) {
+      const p = poly[j], q = poly[(j + 1) % poly.length];
+      const dp = p.x * nx + p.y * ny - lim, dq = q.x * nx + q.y * ny - lim;
+      if (dp <= 0) out.push(p);
+      if ((dp < 0 && dq > 0) || (dp > 0 && dq < 0)) {
+        const t = dp / (dp - dq);
+        out.push({ x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t });
+      }
+    }
+    poly = out;
+  }
+  return cFromPts(poly);
+}
+
+/* Profilbogen: d = dc + r·sin a, z = zc + r·cos a, Normale = sgn·(sin a, cos a) */
+function parc(out, dc, zc, r, a0, a1, steps, sgn) {
+  sgn = sgn || 1;
+  for (let k = 0; k <= steps; k++) {
+    const a = a0 + (a1 - a0) * k / steps, s = Math.sin(a), c = Math.cos(a);
+    out.push([dc + r * s, zc + r * c, sgn * s, sgn * c]);
+  }
+  return out;
+}
+
+/* Symbol-Atlas (UV-Rechtecke), wird in 04-stage gezeichnet */
+const SYMUV = {};
+
+/* ---------- Geometrie-Sammler ---------- */
+class GB {
+  constructor(kit) { this.kit = kit; this.p = []; this.n = []; this.u = []; this.i = []; }
+
+  v(x, y, z, nx, ny, nz, u, w) {
+    const m = this.kit && this.kit.m;
+    if (m) {
+      const e = m.elements;
+      const X = e[0] * x + e[4] * y + e[8] * z + e[12], Y = e[1] * x + e[5] * y + e[9] * z + e[13], Z = e[2] * x + e[6] * y + e[10] * z + e[14];
+      const NX = e[0] * nx + e[4] * ny + e[8] * nz, NY = e[1] * nx + e[5] * ny + e[9] * nz, NZ = e[2] * nx + e[6] * ny + e[10] * nz;
+      x = X; y = Y; z = Z; nx = NX; ny = NY; nz = NZ;
+    }
+    const l = Math.hypot(nx, ny, nz) || 1;
+    this.p.push(x, y, z); this.n.push(nx / l, ny / l, nz / l);
+    if (u !== undefined) this.u.push(u, w); else this.u.push(x * 0.02, y * 0.02);
+    return this.p.length / 3 - 1;
+  }
+
+  /* Dreieck, Umlaufsinn wird an den Normalen ausgerichtet */
+  tri(a, b, c) {
+    const p = this.p, n = this.n;
+    const ax = p[a * 3], ay = p[a * 3 + 1], az = p[a * 3 + 2];
+    const e1x = p[b * 3] - ax, e1y = p[b * 3 + 1] - ay, e1z = p[b * 3 + 2] - az;
+    const e2x = p[c * 3] - ax, e2y = p[c * 3 + 1] - ay, e2z = p[c * 3 + 2] - az;
+    const fx = e1y * e2z - e1z * e2y, fy = e1z * e2x - e1x * e2z, fz = e1x * e2y - e1y * e2x;
+    if (fx * fx + fy * fy + fz * fz < 1e-13) return;
+    const sx = n[a * 3] + n[b * 3] + n[c * 3], sy = n[a * 3 + 1] + n[b * 3 + 1] + n[c * 3 + 1], sz = n[a * 3 + 2] + n[b * 3 + 2] + n[c * 3 + 2];
+    if (fx * sx + fy * sy + fz * sz < 0) this.i.push(a, c, b); else this.i.push(a, b, c);
+  }
+  quad(a, b, c, d) { this.tri(a, b, c); this.tri(a, c, d); }
+
+  /* Kontur entlang eines Profils [[d,z,nd,nz],…] ziehen */
+  loft(C, prof) {
+    const n = C.length, m = prof.length, rings = [];
+    for (let j = 0; j < m; j++) {
+      const q = prof[j], ring = new Array(n);
+      for (let i = 0; i < n; i++) {
+        const c = C[i];
+        ring[i] = this.v(c.x + c.nx * q[0], c.y + c.ny * q[0], q[1], c.nx * q[2], c.ny * q[2], q[3]);
+      }
+      rings.push(ring);
+    }
+    for (let j = 0; j < m - 1; j++) {
+      const A = rings[j], B = rings[j + 1];
+      for (let i = 0; i < n; i++) { const k = (i + 1) % n; this.quad(A[i], A[k], B[k], B[i]); }
+    }
+  }
+
+  /* ebene Fläche mit Löchern */
+  cap(C, holes, z, up) {
+    holes = holes || []; up = up || 1;
+    const v2 = function (p) { return new T.Vector2(p.x, p.y); };
+    const faces = T.ShapeUtils.triangulateShape(C.map(v2), holes.map(function (h) { return h.map(v2); }));
+    let all = C;
+    for (let i = 0; i < holes.length; i++) all = all.concat(holes[i]);
+    const ids = new Array(all.length);
+    for (let i = 0; i < all.length; i++) ids[i] = this.v(all[i].x, all[i].y, z, 0, 0, up);
+    for (let i = 0; i < faces.length; i++) this.tri(ids[faces[i][0]], ids[faces[i][1]], ids[faces[i][2]]);
+  }
+
+  q4(a, b, c, d, nx, ny, nz) {
+    const s = this, f = function (q) { return s.v(q[0], q[1], q[2], nx, ny, nz); };
+    this.quad(f(a), f(b), f(c), f(d));
+  }
+
+  box(x0, y0, z0, x1, y1, z1) {
+    this.q4([x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1], 0, 0, 1);
+    this.q4([x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0], 0, 0, -1);
+    this.q4([x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1], 0, -1, 0);
+    this.q4([x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1], 0, 1, 0);
+    this.q4([x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1], -1, 0, 0);
+    this.q4([x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1], 1, 0, 0);
+  }
+
+  /* bedrucktes Symbol aus dem Atlas */
+  symWH(name, cx, cy, z, w, h, rot) {
+    const uv = SYMUV[name] || SYMUV.solid || [0, 0, 1, 1];
+    const c = Math.cos(rot || 0), s = Math.sin(rot || 0), self = this;
+    const P = [[-w / 2, -h / 2, uv[0], uv[1]], [w / 2, -h / 2, uv[2], uv[1]], [w / 2, h / 2, uv[2], uv[3]], [-w / 2, h / 2, uv[0], uv[3]]]
+      .map(function (q) { return self.v(cx + q[0] * c - q[1] * s, cy + q[0] * s + q[1] * c, z, 0, 0, 1, q[2], q[3]); });
+    this.quad(P[0], P[1], P[2], P[3]);
+  }
+  sym(name, cx, cy, z, size, rot) { this.symWH(name, cx, cy, z, size, size, rot); }
+  rect(cx, cy, z, w, h, rot) { this.symWH('solid', cx, cy, z, w, h, rot); }
+
+  /* Kuppel über einer Kontur */
+  dome(C, cx, cy, z0, bulge, rings) {
+    const n = C.length; let prev = null;
+    for (let k = 0; k <= rings; k++) {
+      const a = k / rings * H_PI, s = Math.cos(a), z = z0 + bulge * Math.sin(a), ring = new Array(n);
+      for (let i = 0; i < n; i++) {
+        const c = C[i], dx = c.x - cx, dy = c.y - cy, dl = Math.hypot(dx, dy) || 1;
+        ring[i] = this.v(cx + dx * s, cy + dy * s, z, c.nx * Math.cos(a) / dl, c.ny * Math.cos(a) / dl, Math.sin(a) / bulge + 1e-6);
+      }
+      if (prev) for (let i = 0; i < n; i++) { const j = (i + 1) % n; this.quad(prev[i], prev[j], ring[j], ring[i]); }
+      prev = ring;
+    }
+  }
+
+  get empty() { return this.i.length === 0; }
+
+  geometry() {
+    const g = new T.BufferGeometry();
+    g.setAttribute('position', new T.Float32BufferAttribute(this.p, 3));
+    g.setAttribute('normal', new T.Float32BufferAttribute(this.n, 3));
+    g.setAttribute('uv', new T.Float32BufferAttribute(this.u, 2));
+    g.setIndex(this.i);
+    return g;
+  }
+}
+
+/* Ein Kit sammelt Geometrie getrennt nach Material */
+class Kit {
+  constructor() { this.g = {}; this.m = null; }
+  b(name) { return this.g[name] || (this.g[name] = new GB(this)); }
+  setM(m) { this.m = m || null; }
+}
+
+/* ================================================================
+   02 · Katalog: Designlinien, Farben, Einsätze
+   Rastermass der Schweizer Kombinationen: 60 mm.
+   ================================================================ */
+const PITCH = 60;
+
+function col(id, name, hex, extra) { return Object.assign({ id: id, name: name, hex: hex }, extra || {}); }
+
+/* Rahmen aus Echtmaterial */
+const FRAME_MATS = {
+  glasw: { id: 'glasw', name: 'Glas weiss', mat: 'glass', hex: '#f0f3f2', pair: 'weiss' },
+  glass: { id: 'glass', name: 'Glas schwarz', mat: 'glass', hex: '#0c0d0e', pair: 'schwarz' },
+  stahl: { id: 'stahl', name: 'Chromstahl gebürstet', mat: 'steel', hex: '#c6cacd', pair: 'schwarz' },
+  alu: { id: 'alu', name: 'Aluminium natur', mat: 'alu', hex: '#d2d4d5', pair: 'weiss' },
+  messing: { id: 'messing', name: 'Messing', mat: 'brass', hex: '#c2a164', pair: 'schwarz' },
+  schiefer: { id: 'schiefer', name: 'Schiefer', mat: 'slate', hex: '#3d4043', pair: 'schwarz' }
+};
+
+/* Montageart und Bedienart */
+const MOUNTS = [['up', 'Unterputz', 'UP'], ['ap', 'Aufputz', 'AP'], ['nup', 'Nass UP', 'NUP · IP55'], ['nap', 'Nass AP', 'NAP · IP55']];
+const OPS = [['druck', 'Druck', 'Schweizer Standard: flacher Druckknopf'], ['wippe', 'Wippe', 'Wipp- bzw. Kippschalter: grosse, geneigte Wippe'], ['kipp', 'Kipphebel', 'Kippschalter mit kleinem Hebel']];
+
+const LINES = [
+  {
+    id: 'ediziodue', brand: 'Feller', name: 'EDIZIOdue', tag: 'kantig, glänzend', size1: 88, shape: 'sq',
+    mounts: ['up', 'ap'], apH: 44, wip: { w: 54, h: 54, r: 1.0 },
+    frame: { style: 'roof', border: 14, rc: 1.6, er: 0.35, hOut: 7.8, hIn: 9.0 },
+    mframe: { style: 'flat', border: 17, rc: 1.0, er: 0.6, h: 8.0 }, mname: 'prestige',
+    insert: { shape: 'sq', size: 59.7, r: 0.5, er: 0.3, proud: 0.35 },
+    rocker: { w: 41, h: 41, r: 1.0, er: 0.45, proud: 2.3, tilt: 3.2 }, led: 'bar',
+    kombi: { rw: 40.6, rh: 25, ry: 10.3, sy: -15.1 },
+    tri: 0, triR: 16.8, finish: 'gloss',
+    colors: [
+      col('weiss', 'Weiss', '#f5f5f2'), col('creme', 'Crème', '#e9e3d0'), col('hellgrau', 'Hellgrau', '#c8cac8'),
+      col('dunkelgrau', 'Dunkelgrau', '#6a6c6b'), col('schwarz', 'Schwarz', '#1b1b1a'), col('coffee', 'Coffee', '#5b4a3e'),
+      col('vanille', 'Vanille', '#efe2b6', { old: 1 }), col('sand', 'Sand', '#cbbda2', { old: 1 }),
+      col('silver', 'Silver', '#b9bcbd', { old: 1, finish: 'metallic' }), col('lemon', 'Lemon', '#d6d24a', { old: 1 }),
+      col('olive', 'Olive', '#7d7b4a', { old: 1 }), col('berry', 'Berry', '#8a2c44', { old: 1 })],
+    mats: ['glasw', 'glass', 'stahl', 'messing', 'alu', 'schiefer']
+  },
+  {
+    id: 'edizioliv', brand: 'Feller', name: 'EDIZIO.liv', tag: 'flach, matt', size1: 96, shape: 'sq',
+    mounts: ['up', 'ap'], apH: 42, wip: { w: 54, h: 54, r: 2.0 },
+    frame: { style: 'flat', border: 18, rc: 3.0, er: 0.9, h: 7.0 },
+    mframe: { style: 'flat', border: 18, rc: 2.0, er: 0.6, h: 7.5 }, mname: 'prestige',
+    insert: { shape: 'sq', size: 59.7, r: 1.4, er: 0.35, proud: 0.25 },
+    rocker: { w: 42, h: 42, r: 1.8, er: 0.5, proud: 2.0, tilt: 2.8 }, led: 'bar',
+    kombi: { rw: 41, rh: 25, ry: 10.3, sy: -15.1 },
+    tri: 0, triR: 16.8, finish: 'matte',
+    colors: [
+      col('weiss', 'Weiss', '#f3f3f0'), col('crema', 'Crema', '#e6dfcf'), col('umbra', 'Umbra', '#8b8176'),
+      col('hellgrau', 'Hellgrau', '#c5c6c4'), col('dunkelgrau', 'Dunkelgrau', '#68696a'), col('schwarz', 'Schwarz', '#1f1f1f')],
+    mats: ['glasw', 'glass', 'messing']
+  },
+  {
+    id: 'standarddue', brand: 'Feller', name: 'STANDARDdue', tag: 'Kreis im Quadrat', size1: 86, shape: 'circle',
+    mounts: ['up', 'ap'], apH: 46, wip: { w: 30, h: 30, w2: 34, r: 4 },
+    frame: { style: 'pillow', border: 13, rc: 8.5, er: 3.0, h: 8.6 },
+    insert: { shape: 'circle', d: 53, dBig: 58.4, bead: 3.2, beadH: 1.25, beadBig: 1.9, beadBigH: 0.75, proud: 0 },
+    rocker: { w: 25, h: 25, w2: 31, r: 3.4, er: 0.8, proud: 3.2, tilt: 4.0 }, led: 'dot',
+    kombi: { rw: 27, rh: 22, ry: 11.2, sy: -11.8 },
+    tri: 0, triR: 16.0, finish: 'gloss',
+    colors: [col('weiss', 'Weiss', '#f4f4f0'), col('schwarz', 'Schwarz', '#1c1c1c')],
+    mats: []
+  },
+  {
+    id: 'kallysto-line', brand: 'Hager', name: 'kallysto.line', tag: 'geradlinig', size1: 92, shape: 'sq',
+    mounts: ['up', 'ap'], apH: 44, wip: { w: 55, h: 55, r: 1.2 },
+    frame: { style: 'flat', border: 16, rc: 2.2, er: 0.7, h: 7.5 },
+    insert: { shape: 'sq', size: 59.6, r: 0.6, er: 0.3, proud: 0.3 },
+    rocker: { w: 45, h: 45, r: 1.1, er: 0.5, proud: 2.2, tilt: 3.0 }, led: 'dot',
+    kombi: { rw: 45, rh: 18.6, ry: 12.7, sy: -10.4 },
+    tri: 270, triR: 16.8, finish: 'satin',
+    colors: [
+      col('ultraweiss', 'Ultraweiss', '#f7f8f8'), col('beige', 'Beige', '#e6d2b5'), col('lichtgrau', 'Lichtgrau', '#c5c7c4'),
+      col('anthrazit', 'Anthrazit', '#383e42'), col('schwarz', 'Schwarz', '#0f0f11'), col('orange', 'Orange', '#e25303')],
+    mats: []
+  },
+  {
+    id: 'kallysto-trend', brand: 'Hager', name: 'kallysto.trend', tag: 'weich gerundet', size1: 94, shape: 'sq',
+    mounts: ['up'], wip: { w: 55, h: 55, r: 1.2 },
+    frame: { style: 'flat', border: 17, rc: 6.5, er: 2.6, h: 8.6 },
+    insert: { shape: 'sq', size: 59.6, r: 0.6, er: 0.3, proud: 0.3 },
+    rocker: { w: 45, h: 45, r: 1.1, er: 0.5, proud: 2.2, tilt: 3.0 }, led: 'dot',
+    kombi: { rw: 45, rh: 18.6, ry: 12.7, sy: -10.4 },
+    tri: 270, triR: 16.8, finish: 'satin',
+    colors: [
+      col('ultraweiss', 'Ultraweiss', '#f7f8f8'), col('beige', 'Beige', '#e6d2b5'), col('lichtgrau', 'Lichtgrau', '#c5c7c4'),
+      col('anthrazit', 'Anthrazit', '#383e42'), col('schwarz', 'Schwarz', '#0f0f11')],
+    mats: []
+  },
+  {
+    id: 'kallysto-art', brand: 'Hager', name: 'kallysto.art', tag: 'Rahmen aus Echtmaterial', size1: 94, shape: 'sq',
+    mounts: ['up'], wip: { w: 55, h: 55, r: 1.2 },
+    frame: null,
+    mframe: { style: 'flat', border: 17, rc: 1.2, er: 0.5, h: 7.6 }, mname: 'art',
+    insert: { shape: 'sq', size: 59.6, r: 0.6, er: 0.3, proud: 0.3 },
+    rocker: { w: 45, h: 45, r: 1.1, er: 0.5, proud: 2.2, tilt: 3.0 }, led: 'dot',
+    kombi: { rw: 45, rh: 18.6, ry: 12.7, sy: -10.4 },
+    tri: 270, triR: 16.8, finish: 'satin',
+    colors: [
+      col('ultraweiss', 'Ultraweiss', '#f7f8f8'), col('lichtgrau', 'Lichtgrau', '#c5c7c4'),
+      col('anthrazit', 'Anthrazit', '#383e42'), col('schwarz', 'Schwarz', '#0f0f11')],
+    mats: ['alu', 'stahl', 'glasw', 'glass']
+  },
+  {
+    id: 'sidus', brand: 'ABB', name: 'Sidus', tag: 'schlanker Rahmen', size1: 88, shape: 'sq',
+    mounts: ['up', 'ap'], apH: 48, wip: { w: 54, h: 54, r: 1.4 },
+    frame: { style: 'flat', border: 14, rc: 1.4, er: 0.5, h: 8.2 },
+    mframe: { style: 'flat', border: 14, rc: 1.0, er: 0.5, h: 8.2 }, mname: 'Echtmaterial',
+    insert: { shape: 'sq', size: 59.6, r: 0.9, er: 0.35, proud: 0.3 },
+    rocker: { w: 41, h: 41, r: 1.3, er: 0.5, proud: 2.2, tilt: 3.0 }, led: 'dot',
+    kombi: { rw: 44, rh: 17.5, ry: 12.6, sy: -10.4 },
+    tri: 270, triR: 16.8, finish: 'satin',
+    colors: [col('weiss', 'Weiss', '#f4f4f1'), col('schwarz', 'Schwarz', '#1b1b1b')],
+    mats: ['glasw', 'glass', 'stahl']
+  },
+  /* Nass-Sortimente IP55: als Gehäuse (NAP) oder bündig in der Wand (NUP) */
+  {
+    id: 'nevo', brand: 'Feller', name: 'NEVO', tag: 'IP55, runder Druckknopf', size1: 82, shape: 'sq',
+    mounts: ['nap', 'nup'], wet: true, pitch: 76, lid: 'body', gasket: true,
+    frame: { style: 'units', border: 3, rc: 9, er: 2.2, h: 58, seam: 15, box: true },
+    nupFrame: { style: 'units', border: 3, rc: 7, er: 1.6, h: 9 },
+    insert: { shape: 'sq', size: 70, r: 7, er: 1.3, proud: 1.6, screws: 4 },
+    rocker: { w: 42, h: 42, r: 21, er: 0.9, proud: 2.6, tilt: 3.5, round: true }, wip: { w: 44, h: 44, r: 5 }, led: 'dot',
+    kombi: { rw: 40, rh: 18, ry: 12, sy: -10 },
+    tri: 0, triR: 16.2, finish: 'satin',
+    colors: [col('weiss', 'Weiss', '#f3f3f0'), col('lichtgrau', 'Lichtgrau', '#c8ccc9'), col('schwarz', 'Schwarz', '#1e1f20')],
+    mats: []
+  },
+  {
+    id: 'robusto', brand: 'Hager', name: 'robusto', tag: 'IP55, quadratische Taste', size1: 82, shape: 'sq',
+    mounts: ['nap', 'nup'], wet: true, pitch: 76, lid: 'lidclear', gasket: false,
+    frame: { style: 'units', border: 3, rc: 7, er: 2.0, h: 56, seam: 14, box: true },
+    nupFrame: { style: 'units', border: 3, rc: 6, er: 1.5, h: 9 },
+    insert: { shape: 'sq', size: 70, r: 5.5, er: 1.2, proud: 1.4, screws: 4 },
+    rocker: { w: 40, h: 40, r: 2.5, er: 0.8, proud: 2.2, tilt: 3.2 }, wip: { w: 46, h: 46, r: 3 }, led: 'dot',
+    kombi: { rw: 40, rh: 18, ry: 12, sy: -10 },
+    tri: 270, triR: 16.2, finish: 'satin',
+    colors: [col('weiss', 'Weiss', '#f4f5f4'), col('lichtgrau', 'Lichtgrau', '#c5c7c4'), col('alu', 'Aluminium', '#b6b9ba', { finish: 'metallic' }), col('schwarz', 'Schwarz', '#17181a')],
+    mats: []
+  }
+];
+const LINE = {};
+LINES.forEach(function (l) { LINE[l.id] = l; });
+
+const CATS = [
+  ['steck', 'Steckdosen'], ['kombi', 'Kombinationen'], ['schalt', 'Schalter & Taster'], ['storen', 'Storen'],
+  ['regler', 'Dimmer & Regler'], ['daten', 'Daten & Multimedia'], ['smart', 'Bus & Smart'], ['div', 'Abdeckungen']
+];
+
+function rep(v, n) { const a = []; for (let i = 0; i < n; i++) a.push(v); return a; }
+
+/* tog = hat Wippen, die sich umlegen lassen · adv = nicht in STANDARDdue */
+const ITEMS = [
+  { id: 't13', cat: 'steck', name: 'Steckdose T13', sub: '1-fach · 10 A / 250 V', b: function (b) { b.sockets(1, '13'); } },
+  { id: 't13x2', cat: 'steck', name: 'Steckdose 2×T13', sub: '2-fach · 10 A / 250 V', b: function (b) { b.sockets(2, '13'); } },
+  { id: 't13x3', cat: 'steck', name: 'Steckdose 3×T13', sub: '3-fach · 10 A / 250 V', b: function (b) { b.sockets(3, '13'); } },
+  { id: 't23', cat: 'steck', name: 'Steckdose T23', sub: '1-fach · 16 A / 250 V', b: function (b) { b.sockets(1, '23'); } },
+  { id: 't23x3', cat: 'steck', name: 'Steckdose 3×T23', sub: '3-fach · 16 A / 250 V', b: function (b) { b.sockets(3, '23'); } },
+  { id: 't15', cat: 'steck', name: 'Steckdose T15', sub: '3 × 400 V · 10 A · 5-polig', b: function (b) { b.tri5('15'); } },
+  { id: 't25', cat: 'steck', name: 'Steckdose T25', sub: '3 × 400 V · 16 A · 5-polig', b: function (b) { b.tri5('25'); } },
+  { id: 't13usb', cat: 'steck', name: 'Steckdose T13 + USB', sub: 'mit Ladeanschluss USB-A / USB-C', adv: 1, b: function (b) { b.t13usb(); } },
+  { id: 'usb', cat: 'steck', name: 'USB-Ladesteckdose', sub: 'USB-A + USB-C', b: function (b) { b.usbOnly(); } },
+  { id: 'schuko', cat: 'steck', name: 'Steckdose Typ F', sub: 'Schuko · 16 A · Spezialanwendung', adv: 1, b: function (b) { b.schuko(); } },
+
+  { id: 'k1', cat: 'kombi', name: 'Schalter + T13', sub: 'Schema 3 mit Steckdose', tog: 1, b: function (b) { b.kombi(1, '13'); } },
+  { id: 'k1l', cat: 'kombi', name: 'Leuchtschalter + T13', sub: 'Schema 3 beleuchtet mit Steckdose', tog: 1, b: function (b) { b.kombi(1, '13', { led: ['orange'] }); } },
+  { id: 'k2', cat: 'kombi', name: '2 Schalter + T13', sub: 'Schema 3+3 mit Steckdose', tog: 1, b: function (b) { b.kombi(2, '13'); } },
+  { id: 'k1t', cat: 'kombi', name: 'Taster + T13', sub: 'Schliesser mit Steckdose', b: function (b) { b.kombi(1, '13', { flat: 1 }); } },
+  { id: 'k23', cat: 'kombi', name: 'Schalter + T23', sub: 'Schema 3 mit Steckdose 16 A', tog: 1, b: function (b) { b.kombi(1, '23'); } },
+
+  { id: 's3', cat: 'schalt', name: 'Druckschalter Schema 3', sub: 'Wechselschalter', tog: 1, b: function (b) { b.std(1, 1); } },
+  { id: 's0', cat: 'schalt', name: 'Druckschalter Schema 0', sub: 'Ausschalter 1-polig', tog: 1, b: function (b) { b.std(1, 1); } },
+  { id: 's6', cat: 'schalt', name: 'Druckschalter Schema 6', sub: 'Kreuzschalter', tog: 1, b: function (b) { b.std(1, 1); } },
+  { id: 's2', cat: 'schalt', name: 'Druckschalter Schema 2', sub: 'Ausschalter 2-polig', tog: 1, b: function (b) { b.std(1, 1); } },
+  { id: 's1', cat: 'schalt', name: 'Druckschalter Schema 1', sub: 'Serieschalter · 2 Wippen', tog: 1, b: function (b) { b.std(2, 1); } },
+  { id: 's33', cat: 'schalt', name: 'Druckschalter Schema 3+3', sub: 'Doppel-Wechsel · 2 Wippen', tog: 1, b: function (b) { b.std(2, 1); } },
+  { id: 's3l', cat: 'schalt', name: 'Leuchtschalter Schema 3', sub: 'mit Orientierungslicht', tog: 1, b: function (b) { b.std(1, 1, { led: ['orange'] }); } },
+  { id: 's3k', cat: 'schalt', name: 'Kontrollschalter Schema 3', sub: 'mit roter Kontrolllampe', tog: 1, b: function (b) { b.std(1, 1, { led: ['red'] }); } },
+  { id: 't1', cat: 'schalt', name: 'Drucktaster', sub: 'Schliesser 1-fach', b: function (b) { b.std(1, 1, { flat: 1 }); } },
+  { id: 't2', cat: 'schalt', name: 'Drucktaster 2-fach', sub: '2 Schliesser', b: function (b) { b.std(2, 1, { flat: 1 }); } },
+  { id: 't1l', cat: 'schalt', name: 'Leuchttaster', sub: 'Schliesser mit LED', b: function (b) { b.std(1, 1, { flat: 1, led: ['white'] }); } },
+  { id: 'tli', cat: 'schalt', name: 'Taster «Licht»', sub: 'Symbol Lampe', b: function (b) { b.std(1, 1, { flat: 1, sym: ['light'] }); } },
+  { id: 'tgl', cat: 'schalt', name: 'Taster «Glocke»', sub: 'Symbol Sonnerie', b: function (b) { b.std(1, 1, { flat: 1, sym: ['bell'] }); } },
+  { id: 'tkey', cat: 'schalt', name: 'Taster «Türöffner»', sub: 'Symbol Schlüssel', b: function (b) { b.std(1, 1, { flat: 1, sym: ['key'] }); } },
+  { id: 'skey', cat: 'schalt', name: 'Schlüsselschalter', sub: 'mit Profilzylinder', b: function (b) { b.keySwitch(); } },
+
+  { id: 'st2', cat: 'storen', name: 'Storenschalter', sub: 'Auf / Ab · 2 Wippen', tog: 1, b: function (b) { b.std(2, 1, { sym: ['up', 'down'], tilts: [1, -1] }); } },
+  { id: 'st2t', cat: 'storen', name: 'Storentaster', sub: 'Auf / Ab · tastend', b: function (b) { b.std(2, 1, { sym: ['up', 'down'], flat: 1 }); } },
+  { id: 'st1', cat: 'storen', name: 'Storenschalter 1 Wippe', sub: 'Auf / Ab auf einer Wippe', tog: 1, b: function (b) { b.std(1, 1, { sym2: ['up', 'down'] }); } },
+  { id: 'st4', cat: 'storen', name: 'Storentaster 2-fach', sub: '2 Storen · 4 Tasten', adv: 1, b: function (b) { b.std(2, 2, { sym: ['up', 'up', 'down', 'down'], flat: 1 }); } },
+
+  { id: 'dim', cat: 'regler', name: 'Drehdimmer LED', sub: 'Universaldimmer mit Drehknopf', b: function (b) { b.dimmer(); } },
+  { id: 'dimt', cat: 'regler', name: 'Tastdimmer LED', sub: 'Bedienung über Taste', b: function (b) { b.std(1, 1, { flat: 1, led: ['white'], sym: ['light'] }); } },
+  { id: 'rot', cat: 'regler', name: 'Drehschalter 0-1-2-3', sub: 'Stufenschalter Lüftung', adv: 1, b: function (b) { b.rotary(); } },
+  { id: 'thk', cat: 'regler', name: 'Raumthermostat', sub: 'mit Drehknopf', adv: 1, b: function (b) { b.thermoKnob(); } },
+  { id: 'thd', cat: 'regler', name: 'Raumthermostat Display', sub: 'mit Anzeige und Tasten', adv: 1, b: function (b) { b.thermoDisplay(); } },
+  { id: 'uhr', cat: 'regler', name: 'Zeitschaltuhr', sub: 'Wochenprogramm mit Display', adv: 1, b: function (b) { b.timer(); } },
+  { id: 'pir', cat: 'regler', name: 'Bewegungsmelder', sub: 'Erfassung 180°', adv: 1, b: function (b) { b.motion(); } },
+
+  { id: 'rj1', cat: 'daten', name: 'Netzwerkdose RJ45', sub: '1 Anschluss · Cat. 6A', b: function (b) { b.rj45(1); } },
+  { id: 'rj2', cat: 'daten', name: 'Netzwerkdose 2×RJ45', sub: '2 Anschlüsse · Cat. 6A', adv: 1, b: function (b) { b.rj45(2); } },
+  { id: 'tv2', cat: 'daten', name: 'Antennendose R/TV', sub: 'Radio + TV', adv: 1, b: function (b) { b.coaxSet(2); } },
+  { id: 'tv3', cat: 'daten', name: 'Antennendose R/TV/SAT', sub: 'Radio + TV + Satellit', adv: 1, b: function (b) { b.coaxSet(3); } },
+  { id: 'mm', cat: 'daten', name: 'Multimedia HDMI + USB', sub: 'Durchführungsdose', adv: 1, b: function (b) { b.hdmi(); } },
+
+  { id: 'bus1', cat: 'smart', name: 'Bus-Taster 1-fach', sub: 'KNX · mit Status-LED', adv: 1, b: function (b) { b.std(1, 1, { flat: 1, led: ['green'] }); } },
+  { id: 'bus2', cat: 'smart', name: 'Bus-Taster 2-fach', sub: 'KNX · 2 Tasten mit LED', adv: 1, b: function (b) { b.std(2, 1, { flat: 1, led: rep('green', 2) }); } },
+  { id: 'bus4', cat: 'smart', name: 'Bus-Taster 4-fach', sub: 'KNX · 4 Tasten mit LED', adv: 1, b: function (b) { b.std(2, 2, { flat: 1, led: rep('green', 4) }); } },
+  { id: 'bus8', cat: 'smart', name: 'Bus-Taster 8-fach', sub: 'KNX · 8 Tasten mit LED', adv: 1, b: function (b) { b.std(2, 4, { flat: 1, led: rep('green', 8) }); } },
+  { id: 'szene', cat: 'smart', name: 'Szenentaster', sub: '4 Szenen mit LED', adv: 1, b: function (b) { b.std(1, 4, { flat: 1, led: rep('white', 4) }); } },
+
+  { id: 'blind', cat: 'div', name: 'Blindabdeckung', sub: 'Abdeckung ohne Funktion', b: function () { } },
+  { id: 'kabel', cat: 'div', name: 'Kabelauslass', sub: 'mit Zugentlastung', b: function (b) { b.cableOut(); } },
+  { id: 'ledo', cat: 'div', name: 'LED-Orientierungslicht', sub: 'Nachtlicht mit Dämmerungssensor', adv: 1, b: function (b) { b.nightLight(); } },
+  { id: 'sig', cat: 'div', name: 'Signalleuchte rot/grün', sub: 'Besetzt- / Frei-Anzeige', adv: 1, b: function (b) { b.signal(); } }
+];
+const ITEM = {};
+ITEMS.forEach(function (it) { ITEM[it.id] = it; });
+
+/* Einsätze, die es auch im Nass-Sortiment gibt */
+const WET_ITEMS = ['t13', 't13x2', 't13x3', 't23', 't23x3', 't15', 't25', 's3', 's0', 's6', 's2', 's1', 's33', 's3l', 's3k', 't1', 't2', 't1l', 'tli', 'tgl', 'tkey', 'skey', 'st2', 'st2t', 'st1', 'pir', 'blind', 'kabel', 'sig'];
+WET_ITEMS.forEach(function (id) { ITEM[id].wet = 1; });
+function itemAllowed(it, L) { return L.wet ? !!it.wet : !(it.adv && L.insert.shape === 'circle'); }
+
+/* Standardgrössen: UP 1×1 bis 3×4, AP bis 4×2, Nass bis 3×2 */
+function sizeAllowed(c, r, mount) {
+  if (!(c >= 1 && r >= 1 && c <= 4 && r <= 4)) return false;
+  const lo = Math.min(c, r), hi = Math.max(c, r);
+  if (mount === 'ap') return lo <= 2;
+  if (mount === 'nap' || mount === 'nup') return hi <= 3 && lo <= 2;
+  return lo <= 3;
+}
+function sizeNote(mount) {
+  return mount === 'ap' ? 'Aufputz-Gehäuse von 1×1 bis 4×2.' : (mount === 'nap' || mount === 'nup') ? 'Nass-Kombinationen von 1×1 bis 3×2.' : 'Rahmen von 1×1 bis 3×4, quer oder hoch.';
+}
+
+/* Aufputz: derselbe Rahmen sitzt auf einem Gehäuse, die Fuge liegt auf Höhe des Sockels */
+function raised(F, H) {
+  const o = Object.assign({}, F), d = H - (F.style === 'roof' ? F.hIn : F.h);
+  if (F.style === 'roof') { o.hOut = F.hOut + d; o.hIn = F.hIn + d; } else o.h = F.h + d;
+  o.seam = d; o.box = true;
+  return o;
+}
+function frameGeo(L, frameColorId, mount) {
+  if (L.wet) return mount === 'nup' ? L.nupFrame : L.frame;
+  if (mount === 'ap') return L._ap || (L._ap = raised(L.frame, L.apH));
+  if (FRAME_MATS[frameColorId] && L.mframe) return L.mframe;
+  return L.frame || L.mframe;
+}
+function frameDims(L, frameColorId, cols, rows, mount) {
+  const F = frameGeo(L, frameColorId, mount), P = L.pitch || PITCH;
+  return { W: cols * P + 2 * F.border, H: rows * P + 2 * F.border };
+}
+function linesFor(mount) { return LINES.filter(function (l) { return l.mounts.indexOf(mount) >= 0; }); }
+
+/* ================================================================
+   03 · Bauteile: Abdeckplatten, Kragen, Tasten, Rahmen und Gehäuse
+   ================================================================ */
+
+/* Kragen T13/T23 nach SN 441011: mind. 36.5 × 21 mm, 13 mm tief */
+const HEX_W = 37.2, HEX_H = 21.4, WELL_1P = 12.6, WELL_3P = 17.5;
+let _hexC = null;
+function HEX() { return _hexC || (_hexC = cHex(HEX_W, HEX_H, 1.4, 9.5)); }
+function M4() { return new T.Matrix4(); }
+
+function buildWell(kit, w, top) {
+  const zf = top - w.depth, dr = w.draft, fr = w.fr, pr = [];
+  parc(pr, w.lip, top - w.lip, w.lip, 0, -H_PI, 4);
+  pr.push([-dr, zf + fr, -1, 0]);
+  parc(pr, -dr - fr, zf + fr, fr, H_PI, PI, 3, -1);
+  kit.b(w.mat).loft(w.C, pr);
+  const fl = kit.b(w.floorMat);
+  const hc = w.holes.map(function (h) { return h.kind === 'screw' ? h.C : cOff(h.C, 0.25); });
+  fl.cap(cOff(w.C, -dr - fr), hc, zf, 1);
+  w.holes.forEach(function (h) {
+    if (h.kind === 'screw') {
+      fl.loft(h.C, [[0, zf, -1, 0], [0, zf - 0.7, -1, 0]]);
+      kit.b('metal').cap(h.C, [], zf - 0.7, 1);
+      kit.b('slot').rect(h.x, h.y, zf - 0.68, 3.5, 0.7, h.ang || 0.5);
+    } else {
+      fl.loft(h.C, [[0.25, zf, -0.7, 0.7], [0, zf - 0.25, -0.7, 0.7]]);
+      const d = kit.b('dark');
+      d.loft(h.C, [[0, zf - 0.25, -1, 0], [0, zf - 7, -1, 0]]);
+      d.cap(h.C, [], zf - 7, 1);
+    }
+  });
+  if (w.slot) kit.b('slot').rect(w.slot.x, w.slot.y, zf + 0.02, 3.7, 0.72, w.slot.ang);
+}
+
+function buildPlate(kit, o) {
+  const top = o.top, er = o.er || 0, gb = kit.b(o.mat || 'body'), holes = [];
+  o.wells.forEach(function (w) { holes.push(cOff(w.C, w.lip)); });
+  o.cuts.forEach(function (c) { holes.push(cOff(c.C, c.lip)); });
+  gb.cap(er ? cOff(o.C, -er) : o.C, holes, top, 1);
+  if (!o.noEdge) {
+    const pr = [];
+    if (er) parc(pr, -er, top - er, er, 0, H_PI, 4); else pr.push([0, top, 1, 0]);
+    pr.push([0, o.bot, 1, 0]);
+    gb.loft(o.C, pr);
+  }
+  o.cuts.forEach(function (c) {
+    const pr = [];
+    parc(pr, c.lip, top - c.lip, c.lip, 0, -H_PI, 3);
+    pr.push([0, top - c.depth, -1, 0]);
+    gb.loft(c.C, pr);
+    kit.b(c.floorMat || 'dark').cap(c.C, [], top - c.depth, 1);
+  });
+  o.wells.forEach(function (w) { buildWell(kit, w, top); });
+}
+
+/* Platte mit verrundeter Kante, Oberseite bei z = 0, Dicke t; für Tasten und Deckel */
+function slab(gb, C, er, t, holes) {
+  const pr = [];
+  gb.cap(er ? cOff(C, -er) : C, holes || [], 0, 1);
+  if (er) parc(pr, -er, -er, er, 0, H_PI, 4); else pr.push([0, 0, 1, 0]);
+  pr.push([0, -t, 1, 0]);
+  gb.loft(C, pr);
+}
+
+/* ---------- Einsatz-Baukasten ---------- */
+class IB {
+  constructor(kit, L, M, top, slot, opt) {
+    opt = opt || {};
+    this.kit = kit; this.L = L; this.M0 = M; this.top = top; this.slot = slot || {};
+    this.op = opt.op || 'druck'; this.lidOpen = opt.lid !== 'zu';
+    this.wells = []; this.cuts = []; this.parts = []; this.big = false;
+  }
+  get flip() { return this.slot.flip ? -1 : 1; }
+  get round() { return this.L.insert.shape === 'circle'; }
+  get wet() { return !!this.L.wet; }
+  part(f) { this.parts.push(f); }
+  well(C, depth, o) {
+    const w = Object.assign({ C: C, depth: depth, lip: 0.7, draft: 0.35, fr: 0.5, holes: [], mat: 'well', floorMat: 'well' }, o || {});
+    this.wells.push(w); return w;
+  }
+  cut(C, depth, o) { this.cuts.push(Object.assign({ C: C, depth: depth, lip: 0.25 }, o || {})); }
+  local(x, y, z) { return M4().multiplyMatrices(this.M0, M4().makeTranslation(x, y, z)); }
+
+  /* --- Steckdosen --- */
+  socket(x, y, rotDeg, type, o) {
+    o = o || {};
+    const rot = rotDeg * PI / 180, c = Math.cos(rot), s = Math.sin(rot), sq = type === '23';
+    const loc = function (lx, ly) { return [x + lx * c - ly * s, y + lx * s + ly * c]; };
+    let C = cXf(HEX(), x, y, rot);
+    if (o.clipR) C = clipCircle(C, o.clipR);
+    const holes = [];
+    [[-9.5, 0], [9.5, 0], [0, -5]].forEach(function (q) {
+      const p = loc(q[0], q[1]);
+      holes.push({ C: cXf(sq ? cRRect(4.5, 5.5, 0.6) : cCircle(2.25, 20), p[0], p[1], rot) });
+    });
+    if (o.screw) { const p = loc(0, 5.5); holes.push({ C: cXf(cCircle(2.3, 20), p[0], p[1], 0), kind: 'screw', x: p[0], y: p[1], ang: rot + 0.6 }); }
+    this.well(C, WELL_1P, { holes: holes });
+  }
+  screw(x, y) {
+    const w = this.well(cXf(cCircle(2.5, 24), x, y, 0), 0.75, { lip: 0.2, draft: 0, fr: 0.05, floorMat: 'metal' });
+    w.slot = { x: x, y: y, ang: 0.5 + x * 0.13 + y * 0.07 };
+  }
+  sockets(n, type) {
+    const L = this.L, I = L.insert;
+    if (n === 1) { this.socket(0, 0, 0, type, { screw: true }); if (this.wet) this.collar(24.6); return; }
+    this.big = true;
+    const tight = this.round || this.wet;
+    const clip = this.round ? I.dBig / 2 - I.beadBig - 0.9 : this.wet ? 27.4 : 0;
+    if (n === 2) {
+      const dy = tight ? 12.6 : 15.6;
+      this.socket(0, dy, 0, type, { clipR: clip }); this.socket(0, -dy, 0, type, { clipR: clip }); this.screw(0, 0);
+    } else {
+      for (let k = 0; k < 3; k++) {
+        const deg = L.tri + k * 120, th = deg * PI / 180;
+        this.socket(L.triR * Math.cos(th), L.triR * Math.sin(th), deg - 90, type, { clipR: clip });
+      }
+      this.screw(0, 0);
+    }
+    if (this.wet) this.collar(31);
+  }
+  /* T15 / T25: L1 und N unten, PE 5 mm darüber, L2 und L3 13 mm darüber */
+  tri5(type) {
+    this.big = true;
+    const y0 = -6.3, sq = type === '25', H = [];
+    const C = cXf(cPoly([
+      { x: 18.9, y: 0, r: 1.4 }, { x: 15.4, y: 3.5, r: 1.5 }, { x: 15.4, y: 26, r: 7 }, { x: -15.4, y: 26, r: 7 },
+      { x: -15.4, y: 3.5, r: 1.5 }, { x: -18.9, y: 0, r: 1.4 }, { x: -9, y: -13.4, r: 11 }, { x: 9, y: -13.4, r: 11 }]), 0, y0, 0);
+    [[-9.5, 0], [9.5, 0], [0, 5]].forEach(function (q) { H.push({ C: cXf(sq ? cRRect(4.5, 5.5, 0.6) : cCircle(2.25, 20), q[0], q[1] + y0, 0) }); });
+    [[-9.5, 13], [9.5, 13]].forEach(function (q) { H.push({ C: cXf(sq ? cRRect(5.5, 4.5, 0.6) : cRRect(4.8, 3.2, 0.5), q[0], q[1] + y0, 0) }); });
+    H.push({ C: cXf(cCircle(2.3, 20), 0, 20.6 + y0, 0), kind: 'screw', x: 0, y: 20.6 + y0, ang: 0.5 });
+    this.well(C, WELL_3P, { holes: H, lip: 0.8 });
+    if (this.wet) this.collar(29);
+  }
+  schuko() {
+    this.big = true;
+    const self = this;
+    this.well(cCircle(19.6, 100), WELL_3P, {
+      lip: 0.9, draft: 0.3, fr: 0.8, holes: [
+        { C: cXf(cCircle(2.5, 20), -9.5, 0, 0) }, { C: cXf(cCircle(2.5, 20), 9.5, 0, 0) },
+        { C: cCircle(2.3, 20), kind: 'screw', x: 0, y: 0, ang: 0.4 }]
+    });
+    this.part(function () {
+      const m = self.kit.b('metal'), zf = self.top - WELL_3P;
+      m.box(-2.6, 17.4, zf, 2.6, 19.3, self.top - 2.5); m.box(-2.6, -19.3, zf, 2.6, -17.4, self.top - 2.5);
+    });
+  }
+  /* Nass: runder Kragen um die Steckdose, Dichtung und Klappdeckel mit Scharnier oben */
+  collar(R) {
+    const self = this, L = this.L;
+    this.part(function () {
+      const kit = self.kit, top = self.top, gb = kit.b('body'), hC = 6.5, t = 2.6, pr = [];
+      pr.push([3.2, top, 1, 0], [3.2, top + 0.9, 1, 0], [2.7, top + 1.4, 0, 1], [0, top + 1.4, 0, 1], [0, top + 1.4, 1, 0], [0, top + hC - 0.6, 1, 0]);
+      parc(pr, -0.6, top + hC - 0.6, 0.6, H_PI, 0, 3);
+      pr.push([-t + 0.6, top + hC, 0, 1]);
+      parc(pr, -t + 0.6, top + hC - 0.6, 0.6, 0, -H_PI, 3);
+      pr.push([-t, top, -1, 0]);
+      gb.loft(cCircle(R, 96), pr);
+      if (L.gasket) kit.b('gasket').cap(cCircle(R - t - 0.15, 72), [cCircle(R - t - 2.3, 72)], top + 0.12, 1);
+      /* Scharnier */
+      const hy = R + 5.0, hz = top + hC + 1.0, hw = R * 0.5;
+      gb.box(-hw, hy - 2.4, top - 0.2, hw, hy + 2.2, hz + 1.3);
+      /* Deckel: dreht um die Scharnierachse nach oben */
+      const m = self.local(0, hy - 2.2, hz);
+      if (self.lidOpen) m.multiply(M4().makeRotationX(-104 * PI / 180));
+      m.multiply(M4().makeTranslation(0, 0, 2.3));
+      kit.setM(m);
+      const lidMat = kit.b(L.lid === 'lidclear' ? 'lidclear' : 'body');
+      const wL = 2 * R + 7.5, hL = 2 * R + 8.5, cyL = -(hy - 2.2) + 0.4;
+      slab(lidMat, cXf(cRRect(wL, hL, R * 0.62), 0, cyL, 0), 0.9, 2.3);
+      slab(lidMat, cXf(cRRect(16, 8, 3), 0, cyL - hL / 2 - 1.5, 0), 0.8, 2.3);
+      kit.setM(self.M0);
+    });
+  }
+  usbA(x, y) {
+    const self = this;
+    this.well(cXf(cRRect(12.6, 5.2, 0.6), x, y, 0), 8, { lip: 0.25, draft: 0, fr: 0.1, mat: 'metal', floorMat: 'dark' });
+    this.part(function () { self.kit.b('ivory').box(x - 5.6, y + 0.2, self.top - 8, x + 5.6, y + 2.0, self.top - 0.9); });
+  }
+  usbC(x, y) {
+    const self = this;
+    this.well(cXf(cRRect(8.6, 2.8, 1.39), x, y, 0), 6.5, { lip: 0.25, draft: 0, fr: 0.1, mat: 'metal', floorMat: 'dark' });
+    this.part(function () { self.kit.b('jack').box(x - 3.3, y - 0.35, self.top - 6.5, x + 3.3, y + 0.35, self.top - 1.0); });
+  }
+  t13usb() { this.big = true; this.socket(0, -9.6, 0, '13', { screw: true }); this.usbA(-9.6, 19.6); this.usbC(9.6, 19.6); }
+  usbOnly() { this.usbA(0, 6.5); this.usbC(0, -6.5); }
+
+  /* --- Bedienelemente: Druckknopf (flach), Wippe (geneigt) oder Kipphebel --- */
+  rp(n) {
+    const L = this.L, R = L.rocker, W = this.op === 'wippe' ? (L.wip || R) : R, two = this.round && n > 1;
+    return { w: two && W.w2 ? W.w2 : W.w, h: W.h, r: W.r, er: R.er, proud: R.proud, tilt: R.tilt, round: this.op !== 'wippe' && !!R.round };
+  }
+  rockers(cx, cy, w, h, nx, ny, o, P) {
+    o = o || {}; P = P || this.rp(nx);
+    const g = 0.4, rc = Math.min(P.r, w / 2 - 0.1, h / 2 - 0.1);
+    this.cut(cXf(cRRect(w + 2 * g, h + 2 * g, rc + g), cx, cy, 0), 4.2);
+    const kw = (w - (nx - 1) * g) / nx, kh = (h - (ny - 1) * g) / ny, tilts = this.op === 'wippe' && !o.flat && ny === 1;
+    let idx = 0;
+    for (let iy = 0; iy < ny; iy++) for (let ix = 0; ix < nx; ix++, idx++) {
+      const x = cx - w / 2 + kw / 2 + ix * (kw + g), y = cy + h / 2 - kh / 2 - iy * (kh + g);
+      const t = tilts ? (o.tilts ? o.tilts[idx] : (idx % 2 ? -1 : 1)) * this.flip : 0;
+      this.key(x, y, kw, kh, Math.min(rc, kw / 4, kh / 4), t, o, idx, P);
+    }
+  }
+  key(x, y, w, h, r, t, o, idx, P) {
+    const self = this, led = o.led && o.led[idx], sym = o.sym && o.sym[idx];
+    this.part(function () {
+      const kit = self.kit, er = Math.min(P.er, w / 6, h / 6), proud = (o.proud || P.proud) * (t === 0 ? 0.82 : 1);
+      const m = self.local(x, y, self.top + proud);
+      if (t) m.multiply(M4().makeRotationX(-t * P.tilt * PI / 180));
+      kit.setM(m);
+      const gb = kit.b('body'), C = cRRect(w, h, r);
+      let lc = null;
+      if (led) {
+        lc = self.L.led === 'bar'
+          ? cXf(cRRect(Math.min(5.6, w * 0.4), 1.9, 0.9), 0, -h / 2 + Math.min(4.6, h * 0.24), 0)
+          : cXf(cCircle(1.25, 16), 0, -h / 2 + Math.min(5, h * 0.26), 0);
+      }
+      slab(gb, C, er, proud + 3.2, lc ? [lc] : []);
+      if (lc) { gb.loft(lc, [[0, 0, -1, 0], [0, -0.3, -1, 0]]); kit.b('led:' + led).cap(lc, [], -0.3, 1); }
+      const ink = kit.b('ink'), ss = Math.min(o.symSize || 11, Math.min(w, h) * 0.42);
+      if (sym) ink.sym(sym, 0, led ? h * 0.08 : 0, 0.04, ss);
+      if (o.sym2) { ink.sym(o.sym2[0], 0, h * 0.27, 0.04, 7.5); ink.sym(o.sym2[1], 0, -h * 0.27, 0.04, 7.5); }
+      kit.setM(self.M0);
+    });
+  }
+  /* runder Druckknopf (NEVO), bei zwei Tasten als zwei Halbkreise */
+  roundKeys(cx, cy, P, n, o) {
+    const self = this, Rk = P.w / 2, g = 0.45;
+    o = o || {};
+    this.cut(cXf(cCircle(Rk + g, 84), cx, cy, 0), 3.6);
+    for (let i = 0; i < n; i++) {
+      const led = o.led && o.led[i];
+      if (led) this.well(cXf(cCircle(1.3, 16), cx + (n === 1 ? 0 : (i ? 7 : -7)), cy - Rk - 4.4, 0), 0.4, { lip: 0.15, draft: 0, fr: 0.05, floorMat: 'led:' + led });
+      (function (i) {
+        self.part(function () {
+          const kit = self.kit, sym = o.sym && o.sym[i];
+          let C, sx = 0;
+          if (n === 1) C = cCircle(Rk, 84);
+          else {
+            const a0 = Math.asin(Math.min(0.9, (g / 2 + 0.2) / Rk)), pts = [];
+            for (let k = 0; k <= 40; k++) { const a = -H_PI + a0 + (PI - 2 * a0) * k / 40; pts.push({ x: Rk * Math.cos(a), y: Rk * Math.sin(a) }); }
+            if (i === 0) { pts.forEach(function (p) { p.x = -p.x; }); pts.reverse(); }
+            C = cFromPts(pts); sx = (i ? 1 : -1) * Rk * 0.48;
+          }
+          kit.setM(self.local(cx, cy, self.top + P.proud * 0.9));
+          slab(kit.b('key2'), C, P.er, P.proud + 3);
+          const ink = kit.b('inkKey');
+          if (sym) ink.sym(sym, sx, 0, 0.04, n === 1 ? 12 : 9);
+          if (o.sym2 && n === 1) { ink.sym(o.sym2[0], 0, Rk * 0.5, 0.04, 8); ink.sym(o.sym2[1], 0, -Rk * 0.5, 0.04, 8); }
+          kit.setM(self.M0);
+        });
+      })(i);
+    }
+  }
+  /* Kipphebel auf Metallbuchse */
+  levers(cx, cy, w, n, o) {
+    const self = this, dx = n > 1 ? Math.min(w / n, 20) : 0;
+    o = o || {};
+    for (let i = 0; i < n; i++) {
+      const x = cx + (i - (n - 1) / 2) * dx, t = o.flat ? 0 : (o.tilts ? o.tilts[i] : (i % 2 ? -1 : 1)) * this.flip;
+      this.well(cXf(cCircle(8.6, 44), x, cy, 0), 0.9, { lip: 0.5, draft: 0, fr: 0.2 });
+      (function (x, t) {
+        self.part(function () {
+          const kit = self.kit, z0 = self.top - 0.9;
+          kit.setM(self.local(x, cy, z0));
+          kit.b('metal').loft(cCircle(7.4, 44), [[-2.8, 2.3, 0, 1], [-0.5, 2.3, 0, 1], [0, 1.8, 1, 0.3], [0, 0, 1, 0]]);
+          kit.b('body').dome(cCircle(4.7, 32), 0, 0, 2.3, 2.1, 5);
+          kit.setM(self.local(x, cy, z0 + 2.9).multiply(M4().makeRotationX(-t * 26 * PI / 180)));
+          const C = cRRect(6.4, 6.4, 2.7), pr = [[0, 0, 1, 0], [-0.5, 14.5, 1, 0]];
+          parc(pr, -2.7, 14.5, 2.2, H_PI, 0, 4);
+          const gb = kit.b('body');
+          gb.loft(C, pr); gb.cap(cOff(C, -2.7), [], 16.7, 1);
+          kit.setM(self.M0);
+        });
+      })(x, t);
+    }
+  }
+  std(nx, ny, o) {
+    const P = this.rp(nx);
+    if (this.op === 'kipp' && ny === 1) this.levers(0, 0, P.w, nx, o);
+    else if (P.round && ny === 1) this.roundKeys(0, 0, P, nx, o);
+    else this.rockers(0, 0, P.w, P.h, nx, ny, o, P);
+    if (this.round) { this.screw(0, 18.9); this.screw(0, -18.9); }
+  }
+  kombi(n, type, o) {
+    const K = this.L.kombi, R = this.L.rocker;
+    if (this.round) this.big = true;
+    if (this.op === 'kipp') this.levers(0, K.ry + 1, K.rw, n, o);
+    else this.rockers(0, K.ry, K.rw, K.rh, n, 1, o, { r: Math.min(R.r, 2.4), er: R.er, proud: R.proud, tilt: R.tilt * 1.5 });
+    this.socket(0, K.sy, 0, type, { screw: true });
+  }
+
+  /* --- Drehknöpfe, Anzeigen, Sensoren --- */
+  knob(x, y, R, hgt, o) {
+    const self = this; o = o || {};
+    this.cut(cXf(cCircle(R + 0.55, 72), x, y, 0), 2.2);
+    this.part(function () {
+      const kit = self.kit;
+      kit.setM(self.local(x, y, self.top));
+      const gb = kit.b('body'), C = cCircle(R, 84), er = 1.1, pr = [];
+      gb.cap(cOff(C, -er), [], hgt, 1);
+      parc(pr, -er, hgt - er, er, 0, H_PI, 5); pr.push([0.35, -1.6, 1, 0]);
+      gb.loft(C, pr);
+      if (o.grip) {
+        const Cb = cRRect(7, R * 1.86, 2.6), p2 = [], hz = hgt + 5;
+        gb.cap(cOff(Cb, -0.8), [], hz, 1);
+        parc(p2, -0.8, hz - 0.8, 0.8, 0, H_PI, 3); p2.push([0, hgt - 0.2, 1, 0]);
+        gb.loft(Cb, p2);
+        kit.b('ink').rect(0, R * 0.58, hz + 0.03, 1.0, R * 0.46, 0);
+      } else kit.b('ink').rect(0, R * 0.62, hgt + 0.03, 1.1, R * 0.42, 0);
+      kit.setM(self.M0);
+    });
+  }
+  dimmer() { this.knob(0, 0, 16.5, 9.5); }
+  rotary() {
+    const self = this; this.big = true;
+    this.knob(0, -4, 13, 6, { grip: 1 });
+    this.part(function () {
+      const ink = self.kit.b('ink');
+      [['d0', 150], ['d1', 110], ['d2', 70], ['d3', 30]].forEach(function (q) {
+        const a = q[1] * PI / 180; ink.sym(q[0], 21 * Math.cos(a), -4 + 21 * Math.sin(a), self.top + 0.03, 6.2);
+      });
+    });
+  }
+  thermoKnob() {
+    const self = this; this.big = true;
+    this.knob(0, 0, 15, 8);
+    this.part(function () {
+      const ink = self.kit.b('ink');
+      for (let k = 0; k < 9; k++) {
+        const a = (225 - k * 33.75) * PI / 180;
+        ink.rect(20.2 * Math.cos(a), 20.2 * Math.sin(a), self.top + 0.03, 0.8, k % 4 === 0 ? 3.6 : 2.2, a - H_PI);
+      }
+    });
+  }
+  display(x, y, w, h, sym) {
+    const self = this;
+    this.cut(cXf(cRRect(w, h, 1.6), x, y, 0), 0.5, { lip: 0.2, floorMat: 'glass' });
+    this.part(function () { self.kit.b('lcd').symWH(sym, x, y, self.top - 0.46, w * 0.66, w * 0.33, 0); });
+  }
+  smallKeys(y, w, h, n, o) {
+    const sav = this.op; this.op = 'druck';
+    this.rockers(0, y, w, h, n, 1, Object.assign({ flat: 1, proud: 1.3 }, o || {}), { r: 1.2, er: 0.5, proud: 1.3, tilt: 0 });
+    this.op = sav;
+  }
+  thermoDisplay() { this.big = true; this.display(0, 8.5, 34, 21, 'temp'); this.smallKeys(-14.5, 31, 9, 2, { sym: ['minus', 'plus'], symSize: 5 }); }
+  timer() { this.big = true; this.display(0, 9.5, 38, 19, 'time'); this.smallKeys(-14.5, 40, 8, 4); }
+  motion() {
+    const self = this; this.big = true;
+    const C = cXf(cRRect(36, 26, 9.5), 0, 4, 0);
+    this.cut(cOff(C, 0.3), 1.2, { lip: 0.2 });
+    this.part(function () { self.kit.b('lens').dome(C, 0, 4, self.top - 1.0, 7.5, 10); });
+    this.well(cXf(cCircle(1.3, 16), 0, -20, 0), 0.5, { lip: 0.15, draft: 0, fr: 0.05, floorMat: 'led:off' });
+  }
+  keySwitch() {
+    const self = this, K = cRRect(1.7, 8, 0.6);
+    this.well(cCircle(10.4, 60), 1.0, { lip: 0.4, draft: 0, fr: 0.15 });
+    this.part(function () {
+      const kit = self.kit, z0 = self.top - 1.0, zt = z0 + 1.3, m = kit.b('metal'), C = cCircle(8.8, 60), pr = [];
+      parc(pr, -0.5, zt - 0.5, 0.5, 0, H_PI, 3); pr.push([0, z0, 1, 0]);
+      m.loft(C, pr); m.cap(cOff(C, -0.5), [K], zt, 1);
+      const d = kit.b('dark'); d.loft(K, [[0, zt, -1, 0], [0, z0 - 2, -1, 0]]); d.cap(K, [], z0 - 2, 1);
+    });
+  }
+
+  /* --- Daten und Multimedia --- */
+  rj45(n) {
+    const self = this; if (n > 1) this.big = true;
+    (n === 1 ? [0] : [-11.5, 11.5]).forEach(function (x) {
+      const y = -4;
+      const C = cXf(cPoly([
+        { x: 5.95, y: -2.6, r: 0.3 }, { x: 5.95, y: 4.0, r: 0.3 }, { x: -5.95, y: 4.0, r: 0.3 }, { x: -5.95, y: -2.6, r: 0.3 },
+        { x: -3.1, y: -2.6, r: 0.2 }, { x: -3.1, y: -4.3, r: 0.3 }, { x: 3.1, y: -4.3, r: 0.3 }, { x: 3.1, y: -2.6, r: 0.2 }]), x, y, 0);
+      self.well(C, 10, { lip: 0.3, draft: 0, fr: 0.1, mat: 'jack', floorMat: 'dark' });
+      self.cut(cXf(cRRect(13, 5, 0.6), x, 10.5, 0), 0.35, { lip: 0.15, floorMat: 'ivory' });
+      self.part(function () {
+        const g = self.kit.b('gold'), zt = self.top - 1.5, zb = self.top - 8.5;
+        for (let k = 0; k < 8; k++) {
+          const px = x - 3.57 + k * 1.02;
+          g.q4([px - 0.22, y + 3.7, zt], [px + 0.22, y + 3.7, zt], [px + 0.22, y + 1.5, zb], [px - 0.22, y + 1.5, zb], 0, -0.954, 0.3);
+        }
+      });
+    });
+  }
+  coax(x, y, kind) {
+    const self = this;
+    this.well(cXf(cCircle(6.6, 44), x, y, 0), 8.5, { lip: 0.5, draft: 0.2, fr: 0.3 });
+    this.part(function () {
+      const kit = self.kit, zf = self.top - 8.5, zt = self.top - 1.0, ro = kind === 'sat' ? 4.6 : 4.75;
+      kit.setM(self.local(x, y, 0));
+      const m = kit.b('metal'), C = cCircle(ro, 40), pr = [];
+      if (kind === 'sat') { for (let k = 0; k <= 12; k++) pr.push([k % 2 ? 0.16 : 0, zf + (zt - zf) * k / 12, 1, 0]); }
+      else { pr.push([0, zf, 1, 0], [0, zt, 1, 0]); }
+      pr.push([0, zt, 0, 1], [-0.6, zt, 0, 1], [-0.6, zt, -1, 0], [-0.6, zf + 1.2, -1, 0]);
+      m.loft(C, pr);
+      const ri = ro - 0.6, hole = kind === 'm' ? 1.15 : 0.8;
+      kit.b('ivory').cap(cCircle(ri, 32), [cCircle(hole, 12)], zf + 1.2, 1);
+      if (kind === 'm') {
+        const P = cCircle(1.15, 14); m.loft(P, [[0, zf + 1.2, 1, 0], [0, zt - 1.6, 1, 0], [-0.5, zt - 1.0, 0.6, 0.8]]); m.cap(cOff(P, -0.5), [], zt - 1.0, 1);
+      } else {
+        const P = cCircle(1.9, 18), Q = cCircle(0.8, 12);
+        m.loft(P, [[0, zf + 1.2, 1, 0], [0, zt - 1.5, 1, 0], [0, zt - 1.5, 0, 1], [-1.1, zt - 1.5, 0, 1]]);
+        const d = kit.b('dark'); d.loft(Q, [[0, zt - 1.5, -1, 0], [0, zf, -1, 0]]); d.cap(Q, [], zf, 1);
+      }
+      kit.setM(self.M0);
+    });
+  }
+  coaxSet(n) {
+    const self = this; this.big = true;
+    const P = n === 2 ? [[-11, 1, 'm', 'R', -11], [11, 1, 'f', 'TV', -11]] : [[-12, -8, 'm', 'R', -19.5], [12, -8, 'f', 'TV', -19.5], [0, 9, 'sat', 'SAT', 20.5]];
+    P.forEach(function (q) { self.coax(q[0], q[1], q[2]); });
+    this.part(function () {
+      const ink = self.kit.b('ink');
+      P.forEach(function (q) { ink.symWH(q[3], q[0], q[4], self.top + 0.03, q[3] === 'SAT' ? 9 : 5.2, q[3] === 'SAT' ? 4.5 : 5.2, 0); });
+    });
+  }
+  hdmi() {
+    const self = this; this.big = true;
+    const C = cXf(cPoly([
+      { x: 7.5, y: -1.0, r: 0.3 }, { x: 7.5, y: 2.8, r: 0.4 }, { x: -7.5, y: 2.8, r: 0.4 },
+      { x: -7.5, y: -1.0, r: 0.3 }, { x: -5.4, y: -2.8, r: 0.4 }, { x: 5.4, y: -2.8, r: 0.4 }]), 0, 9, 0);
+    this.well(C, 9, { lip: 0.25, draft: 0, fr: 0.1, mat: 'metal', floorMat: 'dark' });
+    this.part(function () { self.kit.b('jack').box(-5.6, 8.7, self.top - 9, 5.6, 9.5, self.top - 1.2); });
+    this.usbA(0, -9);
+  }
+
+  /* --- Diverses --- */
+  cableOut() { this.well(cCircle(5.2, 40), 5, { lip: 1.6, draft: 0, fr: 0.3, floorMat: 'dark' }); }
+  nightLight() {
+    this.big = true;
+    this.cut(cXf(cRRect(44, 10, 5), 0, -12, 0), 0.6, { lip: 0.2, floorMat: 'glow' });
+    this.well(cXf(cCircle(1.6, 18), 0, 14, 0), 0.5, { lip: 0.15, draft: 0, fr: 0.05, floorMat: 'glass' });
+  }
+  signal() {
+    const self = this; this.big = true;
+    [[-11, 'lensR'], [11, 'lensG']].forEach(function (q) {
+      const C = cXf(cCircle(6.2, 44), q[0], 0, 0);
+      self.cut(cOff(C, 0.3), 1.0, { lip: 0.2 });
+      self.part(function () { self.kit.b(q[1]).dome(C, q[0], 0, self.top - 0.8, 3.4, 8); });
+    });
+  }
+
+  diam() { const I = this.L.insert; return this.round ? (this.big ? I.dBig : I.d) : 0; }
+
+  finish() {
+    const L = this.L, I = L.insert, kit = this.kit, top = this.top;
+    kit.setM(this.M0);
+    if (this.round) {
+      const d = this.diam(), bw = this.big ? I.beadBig : I.bead, bh = this.big ? I.beadBigH : I.beadH;
+      const Ro = d / 2, a = bw / 2, pr = [];
+      buildPlate(kit, { C: cCircle(Ro - bw, 96), top: top, bot: top - 4, er: 0, noEdge: true, wells: this.wells, cuts: this.cuts });
+      for (let k = 0; k <= 10; k++) {
+        const t = PI - k / 10 * PI;
+        pr.push([-a + a * Math.cos(t), top + bh * Math.sin(t), Math.cos(t) / a, Math.sin(t) / bh]);
+      }
+      pr.push([0, top - 4, 1, 0]);
+      kit.b('body').loft(cCircle(Ro, 96), pr);
+    } else {
+      if (I.screws) { const q = I.size / 2 - 5.5; this.screw(-q, -q); this.screw(q, -q); this.screw(q, q); this.screw(-q, q); }
+      buildPlate(kit, { C: cRRect(I.size, I.size, I.r), top: top, bot: top - 4.5, er: I.er, wells: this.wells, cuts: this.cuts });
+    }
+    for (let i = 0; i < this.parts.length; i++) this.parts[i]();
+    kit.setM(null);
+    return this;
+  }
+}
+
+/* ---------- Abdeckrahmen und Gehäuse ---------- */
+function frameTop(F) { return F.style === 'roof' ? F.hIn : F.h; }
+
+/* Aussenwand bis zur Wand; Gehäuse bekommen eine Fuge zwischen Sockel und Deckel */
+function wallDown(pr, F) {
+  const s = F.seam;
+  if (s && s > 2) pr.push([0, s + 0.5, 1, 0], [-0.55, s + 0.15, 0.55, -0.83], [-0.55, s - 0.15, 0.55, 0.83], [0, s - 0.5, 1, 0]);
+  pr.push([0, 0, 1, 0]);
+}
+
+function buildFrame(kit, L, F, cols, rows, info) {
+  const P = L.pitch || PITCH, ow = cols * P, oh = rows * P, b = F.border, W = ow + 2 * b, H = oh + 2 * b;
+  const g = kit.b('frame'), cl = 0.15;
+  kit.setM(null);
+  if (F.style === 'roof') {
+    /* EDIZIOdue: vier leicht geneigte Flächen mit Gehrungslinien in den Ecken */
+    const a = ow / 2 + cl, bb = oh / 2 + cl, hO = F.hOut, hI = F.hIn, er = F.er, rc = F.rc, rr = rc - er;
+    const Co = cRRect(W, H, rc), pr = [];
+    parc(pr, -er, hO - er, er, 0, H_PI, 3); wallDown(pr, F);
+    g.loft(Co, pr);
+    const slope = (hI - hO) / (b - cl - er), nl = Math.hypot(slope, 1), ccx = W / 2 - rc, ccy = H / 2 - rc, K = 4;
+    [
+      { n: [1, 0], i0: [a, -bb], i1: [a, bb], c0: [ccx, -ccy], c1: [ccx, ccy], a0: -PI / 4 },
+      { n: [0, 1], i0: [a, bb], i1: [-a, bb], c0: [ccx, ccy], c1: [-ccx, ccy], a0: PI / 4 },
+      { n: [-1, 0], i0: [-a, bb], i1: [-a, -bb], c0: [-ccx, ccy], c1: [-ccx, -ccy], a0: 3 * PI / 4 },
+      { n: [0, -1], i0: [-a, -bb], i1: [a, -bb], c0: [-ccx, -ccy], c1: [ccx, -ccy], a0: 5 * PI / 4 }
+    ].forEach(function (s) {
+      const nx = s.n[0] * slope / nl, ny = s.n[1] * slope / nl, nz = 1 / nl, outer = [];
+      for (let k = 0; k <= K; k++) { const an = s.a0 + k / K * PI / 4; outer.push([s.c0[0] + rr * Math.cos(an), s.c0[1] + rr * Math.sin(an)]); }
+      for (let k = 0; k <= K; k++) { const an = s.a0 + PI / 4 + k / K * PI / 4; outer.push([s.c1[0] + rr * Math.cos(an), s.c1[1] + rr * Math.sin(an)]); }
+      const vi0 = g.v(s.i0[0], s.i0[1], hI, nx, ny, nz), vi1 = g.v(s.i1[0], s.i1[1], hI, nx, ny, nz);
+      const vo = outer.map(function (p) { return g.v(p[0], p[1], hO, nx, ny, nz); });
+      for (let k = 0; k < K; k++) g.tri(vi0, vo[k], vo[k + 1]);
+      g.tri(vi0, vo[K], vo[K + 1]); g.tri(vi0, vo[K + 1], vi1);
+      for (let k = K + 1; k < vo.length - 1; k++) g.tri(vi1, vo[k], vo[k + 1]);
+    });
+    const Ci = cRRect(2 * a, 2 * bb, 0);
+    g.loft(Ci, [[0, hI, -1, 0], [0, hI - 5, -1, 0]]);
+  } else if (F.style === 'pillow') {
+    /* STANDARDdue: eine Platte mit runden Ausschnitten */
+    const Co = cRRect(W, H, F.rc), er = F.er, h = F.h, pr = [];
+    const holes = info.map(function (s) { return cXf(cCircle(s.d / 2 + 0.12, 96), s.x, s.y, 0); });
+    g.cap(cOff(Co, -er), holes.map(function (c) { return cOff(c, 0.2); }), h, 1);
+    parc(pr, -er, h - er, er, 0, H_PI, 9); wallDown(pr, F);
+    g.loft(Co, pr);
+    holes.forEach(function (c) {
+      const p2 = []; parc(p2, 0.2, h - 0.2, 0.2, 0, -H_PI, 2); p2.push([0, h - 4.5, -1, 0]);
+      g.loft(c, p2);
+    });
+  } else if (F.style === 'units') {
+    /* Nass-Sortiment: Gehäuse oder Platte mit einem Ausschnitt je Einheit */
+    const Co = cRRect(W, H, F.rc), er = F.er, h = F.h, pr = [], I = L.insert;
+    const holes = info.map(function (s) { return cXf(cRRect(I.size + 0.5, I.size + 0.5, I.r + 0.25), s.x, s.y, 0); });
+    g.cap(cOff(Co, -er), holes.map(function (c) { return cOff(c, 0.25); }), h, 1);
+    parc(pr, -er, h - er, er, 0, H_PI, 7); wallDown(pr, F);
+    g.loft(Co, pr);
+    holes.forEach(function (c) {
+      const p2 = []; parc(p2, 0.25, h - 0.25, 0.25, 0, -H_PI, 2); p2.push([0, h - 4, -1, 0]);
+      g.loft(c, p2);
+    });
+    if (F.box) {
+      /* Kabeleinführungen mit Membran auf der Oberseite */
+      for (let c = 0; c < cols; c++) [-15, 15].forEach(function (dx) {
+        kit.setM(M4().makeTranslation((c - (cols - 1) / 2) * P + dx, H / 2, F.seam * 0.5 + 1).multiply(M4().makeRotationX(-H_PI)));
+        g.loft(cCircle(9.5, 44), [[0, -0.5, 1, 0], [0, 0.9, 1, 0], [0, 0.9, 0, 1], [-1.3, 0.9, 0, 1], [-1.3, 0.9, -1, 0], [-1.3, 0.25, -1, 0]]);
+        g.cap(cCircle(8.2, 40), [], 0.25, 1);
+      });
+      kit.setM(null);
+    }
+  } else {
+    const Co = cRRect(W, H, F.rc), Ci = cRRect(ow + 2 * cl, oh + 2 * cl, Math.max(0.3, L.insert.r || 0.5));
+    const er = F.er, ir = 0.25, h = F.h, pr = [], p2 = [];
+    g.cap(cOff(Co, -er), [cOff(Ci, ir)], h, 1);
+    parc(pr, -er, h - er, er, 0, H_PI, Math.max(3, Math.ceil(er * 3.2))); wallDown(pr, F);
+    g.loft(Co, pr);
+    parc(p2, ir, h - ir, ir, 0, -H_PI, 2); p2.push([0, h - 5, -1, 0]);
+    g.loft(Ci, p2);
+  }
+  /* dunkler Abschluss hinter den Einsätzen */
+  kit.b('dark').cap(cRRect(ow + 2, oh + 2, 0), [], F.box ? 1 : -27, 1);
+  return { W: W, H: H, ow: ow, oh: oh };
+}
+
+/* ganze Kombination: Einsätze + Rahmen */
+function buildCombination(kit, cfg) {
+  const L = cfg.L, F = cfg.F, cols = cfg.cols, rows = cfg.rows, P = L.pitch || PITCH;
+  const top = frameTop(F) + L.insert.proud, info = [], opt = { op: cfg.op, lid: cfg.lid };
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    const s = cfg.slots[r * cols + c], x = (c - (cols - 1) / 2) * P, y = ((rows - 1) / 2 - r) * P;
+    const M = M4().makeTranslation(x, y, 0).multiply(M4().makeRotationZ(-(s.rot || 0) * H_PI));
+    const b = new IB(kit, L, M, top, s, opt);
+    (ITEM[s.item] || ITEM.blind).b(b);
+    b.finish();
+    info.push({ x: x, y: y, d: b.diam() });
+  }
+  const d = buildFrame(kit, L, F, cols, rows, info);
+  return { W: d.W, H: d.H, ow: d.ow, oh: d.oh, top: top, pitch: P, hole: !F.box };
+}
+
+/* einzelner Einsatz für Vorschaubilder */
+function buildSingle(kit, L, itemId, opt) {
+  const b = new IB(kit, L, M4(), 0, {}, opt);
+  (ITEM[itemId] || ITEM.blind).b(b);
+  b.finish();
+  return b;
+}
+
+/* ================================================================
+   04 · Bühne: Materialien, Wand, Licht und progressive Bildberechnung
+   Das Bild wird über viele Einzelbilder gemittelt: jedes mit leicht
+   versetzter Lichtquelle und Kamera. So entstehen weiche Schatten,
+   Umgebungsverschattung und saubere Kanten wie auf einem Foto.
+   ================================================================ */
+
+function halton(i, b) { let f = 1, r = 0; while (i > 0) { f /= b; r += f * (i % b); i = Math.floor(i / b); } return r; }
+function mulberry(seed) {
+  return function () {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+/* kachelbares Werterauschen, Zellgrösse cx × cy Pixel */
+function vnoise(S, cx, cy, rnd) {
+  const nx = Math.max(1, Math.round(S / cx)), ny = Math.max(1, Math.round(S / cy)), g = new Float32Array(nx * ny), out = new Float32Array(S * S);
+  for (let i = 0; i < g.length; i++) g[i] = rnd();
+  for (let y = 0; y < S; y++) {
+    const fy = y / S * ny, y0 = Math.floor(fy), ty = fy - y0, sy = ty * ty * (3 - 2 * ty), ya = (y0 % ny) * nx, yb = ((y0 + 1) % ny) * nx;
+    for (let x = 0; x < S; x++) {
+      const fx = x / S * nx, x0 = Math.floor(fx), tx = fx - x0, sx = tx * tx * (3 - 2 * tx), xa = x0 % nx, xb = (x0 + 1) % nx;
+      const a = g[ya + xa], b = g[ya + xb], c = g[yb + xa], d = g[yb + xb];
+      out[y * S + x] = a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
+    }
+  }
+  return out;
+}
+function canvasOf(S) { const cv = document.createElement('canvas'); cv.width = cv.height = S; return cv; }
+function repeatTex(cv, srgb) {
+  const t = new T.CanvasTexture(cv);
+  t.wrapS = t.wrapT = T.RepeatWrapping; t.anisotropy = 8;
+  if (srgb) t.colorSpace = T.SRGBColorSpace;
+  return t;
+}
+function heightToNormal(h, S, k) {
+  const cv = canvasOf(S), ctx = cv.getContext('2d'), im = ctx.createImageData(S, S), d = im.data;
+  for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+    const l = h[y * S + (x + S - 1) % S], r = h[y * S + (x + 1) % S], u = h[((y + S - 1) % S) * S + x], dn = h[((y + 1) % S) * S + x];
+    const nx = (l - r) * k, ny = (dn - u) * k, il = 1 / Math.hypot(nx, ny, 1), i = (y * S + x) * 4;
+    d[i] = (nx * il * 0.5 + 0.5) * 255; d[i + 1] = (ny * il * 0.5 + 0.5) * 255; d[i + 2] = (il * 0.5 + 0.5) * 255; d[i + 3] = 255;
+  }
+  ctx.putImageData(im, 0, 0);
+  return repeatTex(cv, false);
+}
+function grayTex(h, S) {
+  const cv = canvasOf(S), ctx = cv.getContext('2d'), im = ctx.createImageData(S, S), d = im.data;
+  for (let i = 0; i < S * S; i++) { const v = Math.max(0, Math.min(255, h[i] * 255)); d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v; d[i * 4 + 3] = 255; }
+  ctx.putImageData(im, 0, 0);
+  return repeatTex(cv, false);
+}
+
+/* ---------- Wandoberflächen ---------- */
+const WALLS = [['abrieb', 'Abrieb 1 mm'], ['glatt', 'Glattputz'], ['beton', 'Sichtbeton'], ['holz', 'Eichentäfer']];
+const PAINTS = [['#f2f0ea', 'Weiss'], ['#e2dccf', 'Greige'], ['#c8d1c3', 'Salbei'], ['#b7c5d1', 'Taubenblau'], ['#d8b8a0', 'Terrakotta hell'], ['#4b4e51', 'Anthrazit'], ['#2f3a46', 'Nachtblau']];
+const LIGHTS = [['tag', 'Tageslicht'], ['abend', 'Abendlicht'], ['studio', 'Studio']];
+const LIGHT_SET = {
+  tag: { key: [-0.5, 0.62, 0.84], keyCol: '#fff5e8', keyI: 2.3, domeCol: '#edf3ff', domeI: 1.25, env: 1.0, soft: 0.1, exposure: 1.18 },
+  abend: { key: [0.66, 0.3, 0.8], keyCol: '#ffd6a6', keyI: 1.9, domeCol: '#ffead6', domeI: 0.95, env: 0.5, soft: 0.2, exposure: 1.15 },
+  studio: { key: [-0.22, 0.5, 1.0], keyCol: '#ffffff', keyI: 1.3, domeCol: '#ffffff', domeI: 2.1, env: 1.1, soft: 0.34, exposure: 1.1 }
+};
+const WALL_CACHE = {};
+function wallSpec(kind) {
+  if (WALL_CACHE[kind]) return WALL_CACHE[kind];
+  const r = mulberry(kind.length * 977 + kind.charCodeAt(0) * 13);
+  let o;
+  if (kind === 'abrieb') {
+    const S = 512, a = vnoise(S, 4, 4, r), b = vnoise(S, 2, 2, r), c = vnoise(S, 8, 8, r), d = vnoise(S, 64, 64, r), h = new Float32Array(S * S);
+    for (let i = 0; i < h.length; i++) { const v = 0.5 * a[i] + 0.25 * b[i] + 0.35 * c[i]; h[i] = v * v + d[i] * 0.12; }
+    o = { normalMap: heightToNormal(h, S, 1.5), nScale: 0.6, tile: 125, rough: 0.94, paint: true };
+  } else if (kind === 'glatt') {
+    const S = 512, a = vnoise(S, 128, 128, r), b = vnoise(S, 8, 8, r), c = vnoise(S, 2, 2, r), h = new Float32Array(S * S);
+    for (let i = 0; i < h.length; i++) h[i] = a[i] * 1.6 + b[i] * 0.1 + c[i] * 0.045;
+    o = { normalMap: heightToNormal(h, S, 1.4), nScale: 0.4, tile: 300, rough: 0.86, paint: true };
+  } else if (kind === 'beton') {
+    const S = 1024, a = vnoise(S, 256, 256, r), b = vnoise(S, 64, 64, r), c = vnoise(S, 16, 16, r), d = vnoise(S, 2, 2, r);
+    const al = new Float32Array(S * S), h = new Float32Array(S * S);
+    for (let i = 0; i < al.length; i++) { al[i] = 0.62 + 0.17 * (a[i] - 0.5) + 0.1 * (b[i] - 0.5) + 0.05 * (c[i] - 0.5) + 0.035 * (d[i] - 0.5); h[i] = d[i] * 0.05 + c[i] * 0.03; }
+    for (let k = 0; k < 760; k++) {
+      const px = r() * S, py = r() * S, pr = 0.5 + r() * r() * 1.9, dep = 0.35 + r() * 0.4, R = Math.ceil(pr);
+      for (let y = -R; y <= R; y++) for (let x = -R; x <= R; x++) {
+        if (x * x + y * y > pr * pr) continue;
+        const i = (((py + y) | 0) + S) % S * S + (((px + x) | 0) + S) % S;
+        al[i] *= 0.62; h[i] -= dep;
+      }
+    }
+    const cv = canvasOf(S), ctx = cv.getContext('2d'), im = ctx.createImageData(S, S), dd = im.data;
+    for (let i = 0; i < al.length; i++) { const v = Math.max(0, Math.min(1, al[i])) * 255; dd[i * 4] = v; dd[i * 4 + 1] = v * 0.992; dd[i * 4 + 2] = v * 0.965; dd[i * 4 + 3] = 255; }
+    ctx.putImageData(im, 0, 0);
+    o = { map: repeatTex(cv, true), normalMap: heightToNormal(h, S, 1.6), nScale: 0.7, tile: 950, rough: 0.78, paint: false };
+  } else {
+    const S = 1024, PW = 128, warp = vnoise(S, 64, 256, r), fine = vnoise(S, 2, 96, r), tone = vnoise(S, 16, 512, r);
+    const ph = [], tn = [], h = new Float32Array(S * S);
+    for (let p = 0; p < S / PW; p++) { ph.push(r() * 10); tn.push(0.9 + r() * 0.18); }
+    const cv = canvasOf(S), ctx = cv.getContext('2d'), im = ctx.createImageData(S, S), dd = im.data;
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      const i = y * S + x, p = Math.floor(x / PW), xl = x - p * PW;
+      const t = xl * 0.035 + ph[p] + 3.4 * warp[(y * S + ((x + p * 37) % S))];
+      let g = 0.5 + 0.5 * Math.sin(t * 2 * PI * 1.7);
+      g = 0.55 * g * g + 0.3 * fine[i] + 0.15 * tone[i];
+      let k = tn[p] * (1 - 0.34 * g);
+      const joint = xl < 1.6 || xl > PW - 1.6;
+      if (joint) k *= 0.42;
+      dd[i * 4] = Math.min(255, 214 * k); dd[i * 4 + 1] = Math.min(255, 172 * k); dd[i * 4 + 2] = Math.min(255, 120 * k); dd[i * 4 + 3] = 255;
+      h[i] = (joint ? -1.6 : 0) + g * 0.16 + fine[i] * 0.1;
+    }
+    ctx.putImageData(im, 0, 0);
+    o = { map: repeatTex(cv, true), normalMap: heightToNormal(h, S, 1.8), nScale: 0.7, tile: 960, rough: 0.56, paint: false };
+  }
+  return WALL_CACHE[kind] = o;
+}
+
+/* ---------- Materialien ---------- */
+const MAT = {};
+let ENV_K = 1;
+function setEnv(m, k) { m.userData.env = k; m.envMapIntensity = k * ENV_K; return m; }
+function lum(hex) { const c = new T.Color(hex); return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b; }
+function plastic(hex, finish) {
+  const id = 'p|' + hex + '|' + finish;
+  if (MAT[id]) return MAT[id];
+  let m;
+  if (finish === 'metallic') m = new T.MeshPhysicalMaterial({ color: hex, roughness: 0.38, metalness: 0.75, clearcoat: 0.3, clearcoatRoughness: 0.2 });
+  else {
+    const f = finish === 'gloss' ? [0.24, 0.6, 0.08] : finish === 'matte' ? [0.6, 0, 0] : [0.4, 0.25, 0.25];
+    m = new T.MeshPhysicalMaterial({ color: hex, roughness: f[0], metalness: 0, clearcoat: f[1], clearcoatRoughness: f[2] });
+  }
+  return MAT[id] = setEnv(m, 1);
+}
+let _bump = {};
+function bumpTex(kind) {
+  if (_bump[kind]) return _bump[kind];
+  const S = 256, r = mulberry(kind === 'slate' ? 71 : 29), h = new Float32Array(S * S);
+  if (kind === 'slate') {
+    const a = vnoise(S, 32, 32, r), b = vnoise(S, 8, 8, r), c = vnoise(S, 2, 2, r);
+    for (let i = 0; i < h.length; i++) h[i] = 0.55 * a[i] + 0.3 * b[i] + 0.15 * c[i];
+  } else {
+    const a = vnoise(S, 128, 1, r), b = vnoise(S, 32, 2, r);
+    for (let i = 0; i < h.length; i++) h[i] = 0.6 * a[i] + 0.4 * b[i];
+  }
+  return _bump[kind] = grayTex(h, S);
+}
+function frameMat(fc, finish) {
+  if (!fc.mat) return plastic(fc.hex, fc.finish || finish);
+  const id = 'f|' + fc.id;
+  if (MAT[id]) return MAT[id];
+  let m;
+  if (fc.mat === 'glass') m = new T.MeshPhysicalMaterial({ color: fc.hex, roughness: 0.05, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.02 });
+  else if (fc.mat === 'slate') m = new T.MeshStandardMaterial({ color: fc.hex, roughness: 0.82, metalness: 0, bumpMap: bumpTex('slate'), bumpScale: 1.2 });
+  else {
+    const P = { steel: [0.34, 0.5], alu: [0.46, 0.35], brass: [0.3, 0.45] }[fc.mat];
+    m = new T.MeshStandardMaterial({ color: fc.hex, roughness: P[0], metalness: 1, bumpMap: bumpTex('brush'), bumpScale: P[1] });
+  }
+  return MAT[id] = setEnv(m, 1);
+}
+/* Kragen-Innenseiten: etwas Eigenhelligkeit ersetzt das Licht, das im Kragen hin und her geworfen wird */
+function wellOf(body) {
+  const id = 'w|' + body.uuid;
+  if (MAT[id]) return MAT[id];
+  const m = body.clone();
+  m.emissive = body.color.clone(); m.emissiveIntensity = 0.1;
+  return MAT[id] = setEnv(m, 1);
+}
+function staticMat(name) {
+  if (MAT[name]) return MAT[name];
+  let m;
+  switch (name) {
+    case 'dark': m = setEnv(new T.MeshStandardMaterial({ color: 0x050505, roughness: 0.9 }), 0.2); break;
+    case 'slot': m = setEnv(new T.MeshStandardMaterial({ color: 0x0b0b0b, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }), 0.2); break;
+    case 'metal': m = setEnv(new T.MeshStandardMaterial({ color: 0xc9cdd1, roughness: 0.3, metalness: 1 }), 1.2); break;
+    case 'gold': m = setEnv(new T.MeshStandardMaterial({ color: 0xd9b45a, roughness: 0.28, metalness: 1 }), 1.2); break;
+    case 'ivory': m = plastic('#e8e5dc', 'satin'); break;
+    case 'key2d': m = plastic('#34373b', 'satin'); break;
+    case 'key2l': m = plastic('#5b6065', 'satin'); break;
+    case 'gasket': m = setEnv(new T.MeshStandardMaterial({ color: 0xc42a22, roughness: 0.7 }), 0.6); break;
+    case 'lidclear': m = setEnv(new T.MeshPhysicalMaterial({ color: 0xe6edf1, transparent: true, opacity: 0.3, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.05, depthWrite: false }), 1.3); break;
+    case 'jack': m = plastic('#26282b', 'satin'); break;
+    case 'glass': m = setEnv(new T.MeshPhysicalMaterial({ color: 0x07090b, roughness: 0.06, clearcoat: 1, clearcoatRoughness: 0.03 }), 1); break;
+    case 'lens': m = setEnv(new T.MeshPhysicalMaterial({ color: 0xeef0ed, roughness: 0.34, clearcoat: 0.6, clearcoatRoughness: 0.3 }), 1); break;
+    case 'glow': m = setEnv(new T.MeshStandardMaterial({ color: 0xfff6e6, emissive: 0xffdcae, emissiveIntensity: 1.5, roughness: 0.4 }), 0.6); break;
+    case 'lensR': m = setEnv(new T.MeshPhysicalMaterial({ color: 0x8a0d10, emissive: 0xff2a1e, emissiveIntensity: 1.3, roughness: 0.38, clearcoat: 0.5, clearcoatRoughness: 0.35 }), 1); break;
+    case 'lensG': m = setEnv(new T.MeshPhysicalMaterial({ color: 0x0c5a2a, emissive: 0x0a6a2c, emissiveIntensity: 0.25, roughness: 0.38, clearcoat: 0.5, clearcoatRoughness: 0.35 }), 1); break;
+    default:
+      if (name.indexOf('led:') === 0) {
+        const k = name.slice(4), c = { orange: 0xff7a1c, red: 0xff2a1e, white: 0xf3f6ff, green: 0x35e06a }[k];
+        m = setEnv(new T.MeshStandardMaterial({ color: c === undefined ? 0x3a0d0d : 0x202020, emissive: c === undefined ? 0x000000 : c, emissiveIntensity: c === undefined ? 0 : 2.4, roughness: 0.3 }), 0.8);
+      } else m = plastic('#888888', 'satin');
+  }
+  return MAT[name] = m;
+}
+
+/* ---------- Symbol-Atlas für Aufdrucke ---------- */
+function makeAtlas() {
+  const N = 128, COLS = 8, ROWS = 4, cv = document.createElement('canvas');
+  cv.width = N * COLS; cv.height = N * ROWS;
+  const c = cv.getContext('2d');
+  c.fillStyle = '#fff'; c.strokeStyle = '#fff'; c.lineCap = 'round'; c.lineJoin = 'round'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  let slot = 0;
+  const cell = function (name, span, draw) {
+    const cx = slot % COLS, cy = Math.floor(slot / COLS), px = 3 / cv.width, py = 3 / cv.height;
+    c.save(); c.translate(cx * N, cy * N); draw(N * span, N); c.restore();
+    SYMUV[name] = [cx / COLS + px, 1 - (cy + 1) / ROWS + py, (cx + span) / COLS - px, 1 - cy / ROWS - py];
+    slot += span;
+  };
+  const text = function (s, size) { return function (w, h) { c.font = '600 ' + size + 'px "Barlow Semi Condensed", "Arial Narrow", Arial, sans-serif'; c.fillText(s, w / 2, h / 2 + size * 0.04); }; };
+  cell('solid', 1, function (w, h) { c.fillRect(0, 0, w, h); });
+  cell('up', 1, function () { c.beginPath(); c.moveTo(64, 30); c.lineTo(106, 96); c.lineTo(22, 96); c.closePath(); c.fill(); });
+  cell('down', 1, function () { c.beginPath(); c.moveTo(64, 98); c.lineTo(106, 32); c.lineTo(22, 32); c.closePath(); c.fill(); });
+  cell('light', 1, function () {
+    c.lineWidth = 8; c.beginPath(); c.arc(64, 54, 25, 0, 2 * PI); c.stroke();
+    c.fillRect(51, 86, 26, 7); c.fillRect(54, 98, 20, 7);
+    c.lineWidth = 6; c.beginPath(); c.moveTo(56, 62); c.lineTo(64, 50); c.lineTo(72, 62); c.stroke();
+  });
+  cell('bell', 1, function () {
+    c.beginPath(); c.moveTo(24, 92); c.quadraticCurveTo(38, 84, 38, 62); c.bezierCurveTo(38, 26, 90, 26, 90, 62); c.quadraticCurveTo(90, 84, 104, 92); c.closePath(); c.fill();
+    c.beginPath(); c.arc(64, 102, 9, 0, 2 * PI); c.fill(); c.beginPath(); c.arc(64, 27, 6, 0, 2 * PI); c.fill();
+  });
+  cell('key', 1, function () {
+    c.lineWidth = 11; c.beginPath(); c.arc(38, 64, 18, 0, 2 * PI); c.stroke();
+    c.fillRect(56, 58, 54, 12); c.fillRect(86, 68, 9, 16); c.fillRect(100, 68, 9, 11);
+  });
+  cell('plus', 1, function () { c.fillRect(22, 56, 84, 16); c.fillRect(56, 22, 16, 84); });
+  cell('minus', 1, function () { c.fillRect(22, 56, 84, 16); });
+  cell('d0', 1, text('0', 100)); cell('d1', 1, text('1', 100)); cell('d2', 1, text('2', 100)); cell('d3', 1, text('3', 100));
+  cell('R', 1, text('R', 100)); cell('TV', 1, text('TV', 86)); cell('SAT', 2, text('SAT', 92));
+  cell('temp', 2, text('21.5°', 92)); cell('time', 2, text('07:30', 92));
+  const t = new T.CanvasTexture(cv);
+  t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4;
+  return t;
+}
+
+/* ---------- Umgebung für Spiegelungen ---------- */
+function makeEnv(renderer) {
+  const s = new T.Scene();
+  const add = function (w, h, hex, k, x, y, z) {
+    const m = new T.Mesh(new T.PlaneGeometry(w, h), new T.MeshBasicMaterial({ color: new T.Color(hex).multiplyScalar(k), side: T.DoubleSide }));
+    m.position.set(x, y, z); m.lookAt(0, 0, 0); s.add(m);
+  };
+  s.add(new T.Mesh(new T.BoxGeometry(60, 60, 60), new T.MeshBasicMaterial({ color: new T.Color(0.4, 0.42, 0.45), side: T.BackSide })));
+  add(60, 60, '#ffffff', 1.2, 0, 29.5, 0);
+  add(60, 60, '#9a8c7a', 0.5, 0, -29.5, 0);
+  add(22, 26, '#f4f8ff', 10, -27, 8, 16);
+  add(16, 18, '#fff1dc', 2.4, 26, 2, 18);
+  add(40, 10, '#ffffff', 3.2, 0, 26, 22);
+  const pm = new T.PMREMGenerator(renderer), tex = pm.fromScene(s, 0.03).texture;
+  pm.dispose();
+  s.traverse(function (o) { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
+  return tex;
+}
+
+/* ---------- Shader-Anpassungen ---------- */
+const NEUTRAL_GLSL = [
+  'vec3 kNeutral( vec3 color ) {',
+  '  const float startCompression = 0.76;',
+  '  const float desaturation = 0.15;',
+  '  float x = min( color.r, min( color.g, color.b ) );',
+  '  float offset = x < 0.08 ? x - 6.25 * x * x : 0.04;',
+  '  color -= offset;',
+  '  float peak = max( color.r, max( color.g, color.b ) );',
+  '  if ( peak < startCompression ) return color;',
+  '  float d = 1.0 - startCompression;',
+  '  float newPeak = 1.0 - d * d / ( peak + d - startCompression );',
+  '  color *= newPeak / peak;',
+  '  float g = 1.0 - 1.0 / ( desaturation * ( peak - newPeak ) + 1.0 );',
+  '  return mix( color, vec3( newPeak ), g );',
+  '}'].join('\n');
+let PATCHED = false, HAS_NEUTRAL = false;
+function patchShaders() {
+  if (PATCHED) return; PATCHED = true;
+  const SC = T.ShaderChunk;
+  try {
+    /* diffuses Umgebungslicht dämpfen: die Verschattung kommt aus dem gemittelten Himmelslicht */
+    SC.lights_fragment_maps = SC.lights_fragment_maps.replace(/iblIrradiance \+= getIBLIrradiance\( ([\w.]+) \);/, 'iblIrradiance += getIBLIrradiance( $1 ) * 0.22;');
+    const before = SC.tonemapping_pars_fragment;
+    SC.tonemapping_pars_fragment = before.replace(/vec3 CustomToneMapping\( vec3 color \) \{ return color; \}/,
+      NEUTRAL_GLSL + '\nvec3 CustomToneMapping( vec3 color ) { return kNeutral( color * toneMappingExposure ); }');
+    HAS_NEUTRAL = SC.tonemapping_pars_fragment !== before;
+  } catch (e) { /* Standard-Shader bleiben aktiv */ }
+}
+
+/* ================================================================ */
+function createStage(stageEl, canvas, svg, hooks) {
+  let renderer;
+  try { renderer = new T.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); }
+  catch (e) { return null; }
+  if (!renderer || !renderer.getContext()) return null;
+  patchShaders();
+  const caps = renderer.capabilities, ext = renderer.extensions;
+  const canAcc = !!caps.isWebGL2 && (ext.has('EXT_color_buffer_float') || ext.has('EXT_color_buffer_half_float'));
+  const ACC_MAX = canAcc ? 80 : 1;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
+  renderer.toneMapping = HAS_NEUTRAL ? T.CustomToneMapping : T.ACESFilmicToneMapping;
+  renderer.setClearColor(0x000000, 0);
+
+  const atlas = makeAtlas(), envTex = makeEnv(renderer);
+  const inkOpt = { map: atlas, transparent: true, roughness: 0.8, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 };
+  MAT['ink:d'] = setEnv(new T.MeshStandardMaterial(Object.assign({ color: 0x6f757a }, inkOpt)), 0.5);
+  MAT['ink:l'] = setEnv(new T.MeshStandardMaterial(Object.assign({ color: 0xd4d8db }, inkOpt)), 0.5);
+  MAT.lcd = new T.MeshBasicMaterial({ map: atlas, color: 0x9fdcf5, transparent: true, opacity: 0.92, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+
+  /* Szene */
+  const scene = new T.Scene(); scene.environment = envTex;
+  const WALL_W = 5200, WALL_H = 3800;
+  const wallMat = MAT.wall = setEnv(new T.MeshStandardMaterial({ color: 0xf2f0ea, roughness: 0.92 }), 1);
+  const wall = new T.Mesh(new T.PlaneGeometry(WALL_W, WALL_H), wallMat);
+  /* Wand mit Ausschnitt für den Einlasskasten, damit die Kragen der Steckdosen in die Wand reichen */
+  function wallGeo(hw, hh) { const gb = new GB(null); gb.cap(cRRect(WALL_W, WALL_H, 0), hw > 1 ? [cRRect(hw, hh, 0)] : [], 0, 1); return gb.geometry(); }
+  wall.receiveShadow = true; scene.add(wall);
+  const key = new T.DirectionalLight(0xffffff, 2), dome = new T.DirectionalLight(0xffffff, 1.5);
+  [key, dome].forEach(function (l, i) {
+    l.castShadow = true; l.shadow.mapSize.set(i ? 1024 : 2048, i ? 1024 : 2048);
+    l.shadow.bias = -0.00025; l.shadow.normalBias = 0.1;
+    scene.add(l); scene.add(l.target);
+  });
+  const group = new T.Group(); scene.add(group);
+  const camera = new T.PerspectiveCamera(24, 1, 30, 9000);
+
+  /* Zwischenspeicher für die Mittelung */
+  let rtScene = null, rtA = null, rtB = null, accMat = null, dispMat = null, fsScene = null, fsCam = null, fsMesh = null;
+  if (canAcc) {
+    const o = { type: T.HalfFloatType, format: T.RGBAFormat, minFilter: T.NearestFilter, magFilter: T.NearestFilter, depthBuffer: false };
+    rtScene = new T.WebGLRenderTarget(4, 4, { type: T.HalfFloatType, format: T.RGBAFormat, minFilter: T.NearestFilter, magFilter: T.NearestFilter, samples: 4, depthBuffer: true });
+    rtA = new T.WebGLRenderTarget(4, 4, o); rtB = new T.WebGLRenderTarget(4, 4, o);
+    const vs = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4( position.xy, 0.0, 1.0 ); }';
+    accMat = new T.ShaderMaterial({
+      uniforms: { tNew: { value: null }, tAcc: { value: null }, w: { value: 1 } }, vertexShader: vs, depthTest: false, depthWrite: false, toneMapped: false,
+      fragmentShader: 'uniform sampler2D tNew; uniform sampler2D tAcc; uniform float w; varying vec2 vUv; void main() { gl_FragColor = mix( texture2D( tAcc, vUv ), min( texture2D( tNew, vUv ), vec4( 2.4 ) ), w ); }'
+    });
+    dispMat = new T.ShaderMaterial({
+      uniforms: { tAcc: { value: null }, exposure: { value: 1 }, vig: { value: 0.34 } }, vertexShader: vs, depthTest: false, depthWrite: false, toneMapped: false,
+      fragmentShader: NEUTRAL_GLSL + '\nuniform sampler2D tAcc; uniform float exposure; uniform float vig; varying vec2 vUv;\n' +
+        'float hash( vec2 p ) { return fract( sin( dot( p, vec2( 12.9898, 78.233 ) ) ) * 43758.5453 ); }\n' +
+        'void main() { vec3 c = texture2D( tAcc, vUv ).rgb * exposure; vec2 q = vUv - 0.5; c *= 1.0 - vig * dot( q, q );\n' +
+        '  c = kNeutral( max( c, vec3( 0.0 ) ) ); c = clamp( c, 0.0, 1.0 );\n' +
+        '  c = mix( c * 12.92, 1.055 * pow( c, vec3( 1.0 / 2.4 ) ) - 0.055, step( vec3( 0.0031308 ), c ) );\n' +
+        '  c += ( hash( gl_FragCoord.xy ) - 0.5 ) / 255.0; gl_FragColor = vec4( c, 1.0 ); }'
+    });
+    fsCam = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    fsMesh = new T.Mesh(new T.PlaneGeometry(2, 2), accMat); fsMesh.frustumCulled = false;
+    fsScene = new T.Scene(); fsScene.add(fsMesh);
+  }
+
+  /* Zustand */
+  const LD = 700, tgt = new T.Vector3(0, 0, 4), tmp = new T.Vector3();
+  const keyDir = new T.Vector3(), e1 = new T.Vector3(), e2 = new T.Vector3(), skyDir = new T.Vector3(-0.3, 0.75, 0.6).normalize();
+  let light = LIGHT_SET.tag, domeMean = 0.5;
+  let dims = { W: 88, H: 88, top: 9, pitch: PITCH }, cols = 1, rows = 1, cfgNow = null;
+  let vw = 300, vh = 200, bufW = 300, bufH = 200;
+  let az = -0.36, el = 0.13, zoom = 1, fitDist = 600;
+  let frame = 0, pending = false, sel = -1, hov = -1, exportRT = null;
+  (function () {
+    let s = 0;
+    for (let f = 1; f <= 512; f++) {
+      const z = 0.08 + 0.92 * halton(f, 5), ph = 2 * PI * halton(f, 7), sn = Math.sqrt(1 - z * z);
+      s += z * (0.6 + 0.8 * Math.max(0, sn * Math.cos(ph) * skyDir.x + sn * Math.sin(ph) * skyDir.y + z * skyDir.z));
+    }
+    domeMean = s / 512;
+  })();
+
+  function resolver(c) {
+    const body = plastic(c.ic.hex, c.ic.finish || c.L.finish), fr = frameMat(c.fc, c.L.finish), light = lum(c.ic.hex) > 0.25;
+    const ink = light ? MAT['ink:d'] : MAT['ink:l'];
+    return function (name) {
+      return name === 'body' ? body : name === 'well' ? wellOf(body) : name === 'frame' ? fr : name === 'ink' ? ink : name === 'inkKey' ? MAT['ink:l']
+        : name === 'key2' ? staticMat(light ? 'key2d' : 'key2l') : name === 'lcd' ? MAT.lcd : staticMat(name);
+    };
+  }
+  function addMeshes(parent, kit, res) {
+    for (const name in kit.g) {
+      const gb = kit.g[name];
+      if (gb.empty) continue;
+      const mesh = new T.Mesh(gb.geometry(), res(name)), flat = name === 'ink' || name === 'inkKey' || name === 'lcd' || name === 'slot', clear = name === 'lidclear';
+      mesh.castShadow = !flat && !clear; mesh.receiveShadow = name !== 'lcd';
+      if (flat) mesh.renderOrder = 2;
+      if (clear) mesh.renderOrder = 3;
+      parent.add(mesh);
+    }
+  }
+  function clearGroup(g) { g.children.slice().forEach(function (m) { g.remove(m); m.geometry.dispose(); }); }
+
+  /* Kamera */
+  function computeFit() {
+    const th = Math.tan(camera.fov * PI / 360);
+    const mw = dims.W * 0.62 + 36, mh = dims.H * 0.62 + 36;
+    fitDist = Math.max(mh / th, mw / (th * camera.aspect));
+  }
+  function applyCam() {
+    const d = fitDist * zoom, ce = Math.cos(el);
+    camera.clearViewOffset();
+    camera.position.set(tgt.x + d * Math.sin(az) * ce, tgt.y + d * Math.sin(el), tgt.z + d * Math.cos(az) * ce);
+    camera.lookAt(tgt); camera.updateMatrixWorld(); camera.updateProjectionMatrix();
+    drawOverlay();
+  }
+  function fitShadow() {
+    const e = Math.hypot(dims.W, dims.H) / 2 + 28;
+    [key, dome].forEach(function (l) {
+      const c = l.shadow.camera;
+      c.left = -e; c.right = e; c.top = e; c.bottom = -e; c.near = LD - e - 30; c.far = LD + e + 30;
+      c.updateProjectionMatrix(); l.target.position.set(0, 0, 0); l.target.updateMatrixWorld();
+    });
+  }
+
+  /* Auswahlrahmen als SVG über dem Bild */
+  const ovSel = svg.querySelector('#ovSel'), ovHov = svg.querySelector('#ovHover');
+  function proj(x, y, z) { tmp.set(x, y, z).project(camera); return ((tmp.x * 0.5 + 0.5) * vw).toFixed(1) + ',' + ((-tmp.y * 0.5 + 0.5) * vh).toFixed(1); }
+  function slotPoly(i) {
+    const P = dims.pitch || PITCH, c = i % cols, r = Math.floor(i / cols), x = (c - (cols - 1) / 2) * P, y = ((rows - 1) / 2 - r) * P, h = P / 2 - 1, z = dims.top + 0.6;
+    return [proj(x - h, y - h, z), proj(x + h, y - h, z), proj(x + h, y + h, z), proj(x - h, y + h, z)].join(' ');
+  }
+  let over = false, idleT = 0;
+  function wake(ms) {
+    svg.classList.remove('idle'); clearTimeout(idleT);
+    if (ms) idleT = setTimeout(function () { svg.classList.add('idle'); }, ms);
+  }
+  function drawOverlay() {
+    const n = cols * rows;
+    if (sel >= 0 && sel < n) { ovSel.setAttribute('points', slotPoly(sel)); ovSel.style.display = ''; } else ovSel.style.display = 'none';
+    if (hov >= 0 && hov < n && hov !== sel) { ovHov.setAttribute('points', slotPoly(hov)); ovHov.style.display = ''; } else ovHov.style.display = 'none';
+  }
+  function slotAt(e) {
+    const r = canvas.getBoundingClientRect();
+    const nx = (e.clientX - r.left) / r.width * 2 - 1, ny = -((e.clientY - r.top) / r.height * 2 - 1);
+    const o = camera.position, p = new T.Vector3(nx, ny, 0.5).unproject(camera).sub(o), t = (dims.top - o.z) / p.z;
+    if (!(t > 0)) return -1;
+    const P = dims.pitch || PITCH, c = Math.floor((o.x + p.x * t) / P + cols / 2), rr = Math.floor(rows / 2 - (o.y + p.y * t) / P);
+    return (c >= 0 && c < cols && rr >= 0 && rr < rows) ? rr * cols + c : -1;
+  }
+
+  /* Bildberechnung */
+  function present() {
+    if (!canAcc) return;
+    fsMesh.material = dispMat; dispMat.uniforms.tAcc.value = rtA.texture;
+    renderer.setRenderTarget(null); renderer.render(fsScene, fsCam);
+  }
+  function renderFrame() {
+    const f = frame;
+    if (f === 0) {
+      key.position.copy(keyDir).multiplyScalar(LD);
+      tmp.set(0.12, 0.28, 1).normalize(); dome.position.copy(tmp).multiplyScalar(LD);
+      dome.intensity = light.domeI * domeMean / tmp.z;
+      camera.clearViewOffset();
+    } else {
+      const rr = Math.sqrt(halton(f, 2)) * light.soft, an = 2 * PI * halton(f, 3);
+      tmp.copy(keyDir).addScaledVector(e1, rr * Math.cos(an)).addScaledVector(e2, rr * Math.sin(an)).normalize();
+      key.position.copy(tmp).multiplyScalar(LD);
+      const z = 0.08 + 0.92 * halton(f, 5), ph = 2 * PI * halton(f, 7), sn = Math.sqrt(1 - z * z);
+      tmp.set(sn * Math.cos(ph), sn * Math.sin(ph), z);
+      dome.intensity = light.domeI * (0.6 + 0.8 * Math.max(0, tmp.dot(skyDir)));
+      dome.position.copy(tmp).multiplyScalar(LD);
+      camera.setViewOffset(bufW, bufH, halton(f, 11) - 0.5, halton(f, 13) - 0.5, bufW, bufH);
+    }
+    if (!canAcc) { renderer.setRenderTarget(null); renderer.render(scene, camera); return; }
+    const target = exportRT || rtScene;
+    renderer.setRenderTarget(target); renderer.render(scene, camera);
+    camera.clearViewOffset();
+    fsMesh.material = accMat;
+    accMat.uniforms.tNew.value = target.texture; accMat.uniforms.tAcc.value = rtA.texture; accMat.uniforms.w.value = 1 / (f + 1);
+    renderer.setRenderTarget(rtB); renderer.render(fsScene, fsCam);
+    const s = rtA; rtA = rtB; rtB = s;
+  }
+  let perTick = 1, lastTick = 0;
+  function tick() {
+    if (frame >= ACC_MAX) return;
+    const now = performance.now(), dt = now - lastTick;
+    lastTick = now;
+    if (frame === 0) perTick = 1; else if (dt < 22) perTick = Math.min(4, perTick + 1); else if (dt > 40) perTick = Math.max(1, perTick - 1);
+    for (let k = 0; k < perTick && frame < ACC_MAX; k++) { renderFrame(); frame++; }
+    present();
+    if (hooks.onProgress) hooks.onProgress(frame / ACC_MAX);
+    if (frame < ACC_MAX) kick();
+  }
+  function kick() {
+    if (pending) return;
+    pending = true;
+    let done = false;
+    const run = function () { if (done) return; done = true; pending = false; tick(); };
+    requestAnimationFrame(run); setTimeout(run, 140);
+  }
+  function reset() { frame = 0; kick(); }
+
+  function size() {
+    const w = Math.max(60, stageEl.clientWidth), h = Math.max(60, stageEl.clientHeight);
+    let pr = Math.min(window.devicePixelRatio || 1, 2);
+    const budget = 2.3e6;
+    if (w * h * pr * pr > budget) pr = Math.sqrt(budget / (w * h));
+    renderer.setPixelRatio(pr); renderer.setSize(w, h, false);
+    vw = w; vh = h; bufW = canvas.width; bufH = canvas.height;
+    if (canAcc) { rtScene.setSize(bufW, bufH); rtA.setSize(bufW, bufH); rtB.setSize(bufW, bufH); }
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    computeFit(); applyCam(); reset();
+  }
+
+  /* Bedienung: ziehen = drehen, Rad/Pinch = zoomen, Klick = Feld wählen */
+  const ptrs = new Map();
+  let drag = null, pinch = null, anim = 0;
+  const clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+  const pdist = function () { const a = Array.from(ptrs.values()); return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) || 1; };
+  canvas.addEventListener('pointerdown', function (e) {
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ohne Capture weiter */ }
+    ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    cancelAnimationFrame(anim);
+    if (ptrs.size === 1) { drag = { x: e.clientX, y: e.clientY, az: az, el: el, moved: 0 }; pinch = null; }
+    else if (ptrs.size === 2) { pinch = { d: pdist(), zoom: zoom }; drag = null; }
+  });
+  canvas.addEventListener('pointermove', function (e) {
+    if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (drag && ptrs.size === 1) {
+      const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      drag.moved = Math.max(drag.moved, Math.hypot(dx, dy));
+      if (drag.moved > 4) {
+        az = clamp(drag.az - dx * 0.006, -1.2, 1.2); el = clamp(drag.el + dy * 0.006, -0.75, 0.85);
+        applyCam(); reset();
+      }
+    } else if (pinch && ptrs.size === 2) {
+      zoom = clamp(pinch.zoom * pinch.d / pdist(), 0.3, 2.4); applyCam(); reset();
+    } else if (!ptrs.size && e.pointerType === 'mouse') {
+      const h = slotAt(e);
+      if (h !== hov) { hov = h; drawOverlay(); canvas.style.cursor = h >= 0 ? 'pointer' : 'grab'; }
+    }
+  });
+  const up = function (e) {
+    const had = ptrs.has(e.pointerId);
+    ptrs.delete(e.pointerId);
+    if (had && drag && drag.moved <= 4 && e.type === 'pointerup') { const s = slotAt(e); if (s >= 0 && hooks.onPick) hooks.onPick(s); }
+    drag = null; if (ptrs.size < 2) pinch = null;
+  };
+  canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up);
+  canvas.addEventListener('pointerenter', function () { over = true; wake(0); });
+  canvas.addEventListener('pointerleave', function () { over = false; wake(1500); if (hov !== -1) { hov = -1; drawOverlay(); } });
+  canvas.addEventListener('wheel', function (e) {
+    e.preventDefault(); cancelAnimationFrame(anim);
+    zoom = clamp(zoom * Math.exp(e.deltaY * 0.0012), 0.3, 2.4); applyCam(); reset();
+  }, { passive: false });
+  function view(t) {
+    cancelAnimationFrame(anim);
+    const a0 = az, e0 = el, z0 = zoom, t0 = performance.now();
+    const step = function () {
+      const k = Math.min(1, (performance.now() - t0) / 420), s = k * k * (3 - 2 * k);
+      az = a0 + (t.az - a0) * s; el = e0 + (t.el - e0) * s; zoom = z0 + (t.zoom - z0) * s;
+      applyCam(); reset();
+      if (k < 1) anim = requestAnimationFrame(step);
+    };
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { az = t.az; el = t.el; zoom = t.zoom; applyCam(); reset(); }
+    else step();
+  }
+
+  /* Vorschaubilder einzelner Einsätze */
+  const tScene = new T.Scene(); tScene.environment = envTex;
+  const tKey = new T.DirectionalLight(0xffffff, 2.6), tFill = new T.DirectionalLight(0xffffff, 0.8), tGroup = new T.Group();
+  tKey.position.set(-70, 95, 150); tKey.castShadow = true; tKey.shadow.mapSize.set(512, 512); tKey.shadow.bias = -0.0005; tKey.shadow.normalBias = 0.12;
+  (function () { const c = tKey.shadow.camera; c.left = -45; c.right = 45; c.top = 45; c.bottom = -45; c.near = 60; c.far = 330; c.updateProjectionMatrix(); })();
+  tFill.position.set(40, -20, 200);
+  tScene.add(tKey); tScene.add(tKey.target); tScene.add(tFill); tScene.add(tGroup);
+  const tCam = new T.OrthographicCamera(-33, 33, 33, -33, 1, 700);
+  tCam.position.set(0, 0, 300); tCam.lookAt(0, 0, 0);
+  function thumb(cv2d, L, itemId, ic, opt) {
+    const kit = new Kit(), I = L.insert, half = (I.shape === 'circle' ? I.dBig : I.size) / 2 + 3.4;
+    tCam.left = -half; tCam.right = half; tCam.top = half; tCam.bottom = -half; tCam.updateProjectionMatrix();
+    clearGroup(tGroup);
+    buildSingle(kit, L, itemId, opt);
+    addMeshes(tGroup, kit, resolver({ L: L, ic: ic, fc: ic }));
+    const S = cv2d.width, pr = renderer.getPixelRatio(), v = (S + 0.01) / pr;
+    if (canvas.width < S || canvas.height < S) { clearGroup(tGroup); return false; }
+    renderer.setRenderTarget(null); renderer.setScissorTest(true);
+    renderer.setViewport(0, 0, v, v); renderer.setScissor(0, 0, v, v);
+    renderer.render(tScene, tCam);
+    const ctx = cv2d.getContext('2d');
+    ctx.clearRect(0, 0, S, S); ctx.drawImage(canvas, 0, canvas.height - S, S, S, 0, 0, S, S);
+    renderer.setScissorTest(false); renderer.setViewport(0, 0, vw, vh);
+    clearGroup(tGroup);
+    return true;
+  }
+  function afterThumbs() { if (canAcc && frame > 0) present(); else reset(); }
+
+  const api = {
+    accumulate: canAcc,
+    setConfig: function (cfg) {
+      const sizeChanged = !cfgNow || cfgNow.cols !== cfg.cols || cfgNow.rows !== cfg.rows || cfgNow.L !== cfg.L || cfgNow.F !== cfg.F;
+      clearGroup(group);
+      const kit = new Kit();
+      dims = buildCombination(kit, cfg); cols = cfg.cols; rows = cfg.rows; cfgNow = cfg;
+      addMeshes(group, kit, resolver(cfg));
+      if (sizeChanged) { computeFit(); fitShadow(); wall.geometry.dispose(); wall.geometry = dims.hole ? wallGeo(Math.min(dims.ow + 4, dims.W - 8), Math.min(dims.oh + 4, dims.H - 8)) : wallGeo(0, 0); }
+      applyCam(); reset();
+    },
+    setWall: function (kind, paint) {
+      const w = wallSpec(kind);
+      wallMat.map = w.map || null; wallMat.normalMap = w.normalMap; wallMat.normalScale.set(w.nScale, w.nScale);
+      wallMat.roughness = w.rough; wallMat.color.set(w.paint ? paint : '#ffffff');
+      [w.map, w.normalMap].forEach(function (t) { if (t) t.repeat.set(50 / w.tile, 50 / w.tile); });
+      wallMat.needsUpdate = true; reset();
+    },
+    setLight: function (name) {
+      light = LIGHT_SET[name] || LIGHT_SET.tag;
+      keyDir.set(light.key[0], light.key[1], light.key[2]).normalize();
+      e1.set(0, 1, 0).cross(keyDir).normalize(); e2.copy(keyDir).cross(e1).normalize();
+      key.color.set(light.keyCol); key.intensity = light.keyI; dome.color.set(light.domeCol);
+      ENV_K = light.env;
+      for (const id in MAT) { const m = MAT[id]; if (m.userData && m.userData.env !== undefined) m.envMapIntensity = m.userData.env * ENV_K; }
+      if (dispMat) dispMat.uniforms.exposure.value = light.exposure;
+      renderer.toneMappingExposure = light.exposure;
+      reset();
+    },
+    select: function (i) { sel = i; drawOverlay(); wake(over ? 0 : 2800); },
+    view: view,
+    viewNow: function () { return { az: az, el: el, zoom: zoom }; },
+    thumb: thumb, afterThumbs: afterThumbs,
+    firstFrameOnly: function () { frame = 0; renderFrame(); present(); frame = ACC_MAX; },
+    finishNow: function () { while (frame < ACC_MAX) { renderFrame(); frame++; } present(); if (hooks.onProgress) hooks.onProgress(1); },
+    resize: size,
+    /* Bild zum Speichern: rund 3 Megapixel, vollständig gemittelt */
+    snapshot: function (done) {
+      const pr0 = renderer.getPixelRatio(), pr = Math.min(4, Math.sqrt(3.0e6 / (vw * vh)));
+      const big = canAcc && pr > pr0 * 1.05;
+      const setBuf = function (p) {
+        renderer.setPixelRatio(p); renderer.setSize(vw, vh, false);
+        bufW = canvas.width; bufH = canvas.height; rtA.setSize(bufW, bufH); rtB.setSize(bufW, bufH);
+      };
+      try {
+        if (big) {
+          setBuf(pr);
+          exportRT = new T.WebGLRenderTarget(bufW, bufH, { type: T.HalfFloatType, format: T.RGBAFormat, minFilter: T.NearestFilter, magFilter: T.NearestFilter, depthBuffer: true });
+        }
+        frame = 0;
+        while (frame < ACC_MAX) { renderFrame(); frame++; }
+        present();
+        canvas.toBlob(done, 'image/png');
+      } catch (e) { done(null); }
+      if (big) {
+        if (exportRT) { exportRT.dispose(); exportRT = null; }
+        setBuf(pr0);
+        frame = 0; renderFrame(); frame = 1; present(); kick();
+      }
+      if (hooks.onProgress) hooks.onProgress(frame / ACC_MAX);
+    }
+  };
+  if (window.ResizeObserver) new ResizeObserver(function () { size(); }).observe(stageEl);
+  else window.addEventListener('resize', size);
+  canvas.style.cursor = 'grab';
+  return api;
+}
+
+/* ================================================================
+   05 · Oberfläche und Zustand
+   ================================================================ */
+const $ = function (s, r) { return (r || document).querySelector(s); };
+function h(tag, attrs, kids) {
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs) {
+    const v = attrs[k];
+    if (v === null || v === undefined || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k === 'style') e.style.cssText = v;
+    else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  if (kids) kids.forEach(function (c) { if (c) e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+  return e;
+}
+function byId(list, id) { for (let i = 0; i < list.length; i++) if (list[i].id === id) return list[i]; return null; }
+function lumHex(hex) { const n = parseInt(hex.slice(1), 16); return (0.2126 * (n >> 16 & 255) + 0.7152 * (n >> 8 & 255) + 0.0722 * (n & 255)) / 255; }
+/* Rahmen: Aufputz und Nass nur in Kunststofffarben, Unterputz zusätzlich in Echtmaterial */
+function frameOpts(L, mount) {
+  if (L.wet || mount === 'ap') return L.colors;
+  return (L.frame ? L.colors : []).concat(L.mats.map(function (id) { return FRAME_MATS[id]; }));
+}
+function nearestIn(list, hex) {
+  const l = lumHex(hex); let best = null, bd = 9;
+  list.forEach(function (c) { if (c.old || c.mat) return; const d = Math.abs(lumHex(c.hex) - l); if (d < bd) { bd = d; best = c; } });
+  return best || list[0];
+}
+function nearestColor(L, hex) { return nearestIn(L.colors, hex); }
+function pairColor(L, mat) { return byId(L.colors, mat.pair) || nearestColor(L, mat.pair === 'weiss' ? '#ffffff' : '#000000'); }
+const isNarrow = function () { return window.innerWidth <= 900; };
+
+/* ---------- Zustand ---------- */
+const STORE_KEY = 'kombi-planer-v2', TABS = ['secLine', 'secColor', 'secSize', 'secFill', 'secEnv', 'secList'];
+function defaults() {
+  return {
+    mount: 'up', line: 'ediziodue', fc: 'weiss', ic: 'weiss', link: true, cols: 2, rows: 1,
+    slots: [{ item: 's3', rot: 0, flip: false }, { item: 't13x3', rot: 0, flip: false }],
+    sel: 0, op: 'druck', lid: 'auf', wall: 'abrieb', paint: '#f2f0ea', light: 'tag', cat: 'all', tab: 'secLine'
+  };
+}
+function load() { try { const s = JSON.parse(localStorage.getItem(STORE_KEY)); return s && typeof s === 'object' ? s : null; } catch (e) { return null; } }
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* ohne Speicher weiter */ } }
+function sanitize(s) {
+  const d = defaults();
+  if (!s) return d;
+  const o = Object.assign({}, d, s);
+  if (!MOUNTS.some(function (m) { return m[0] === o.mount; })) o.mount = d.mount;
+  if (!LINE[o.line] || LINE[o.line].mounts.indexOf(o.mount) < 0) o.line = linesFor(o.mount)[0].id;
+  const L = LINE[o.line], fo = frameOpts(L, o.mount);
+  if (!byId(fo, o.fc)) o.fc = fo[0].id;
+  if (!byId(L.colors, o.ic)) o.ic = L.colors[0].id;
+  o.cols = o.cols | 0; o.rows = o.rows | 0;
+  if (!sizeAllowed(o.cols, o.rows, o.mount)) { o.cols = 2; o.rows = 1; }
+  const n = o.cols * o.rows, src = Array.isArray(o.slots) ? o.slots : [], slots = [];
+  for (let i = 0; i < n; i++) {
+    const q = src[i] || {}, it = ITEM[q.item];
+    slots.push({ item: it && itemAllowed(it, L) ? it.id : 't13', rot: ((q.rot | 0) % 4 + 4) % 4, flip: !!q.flip });
+  }
+  o.slots = slots;
+  o.sel = Math.max(0, Math.min(n - 1, o.sel | 0));
+  if (!OPS.some(function (x) { return x[0] === o.op; })) o.op = d.op;
+  if (o.lid !== 'zu') o.lid = 'auf';
+  if (!WALLS.some(function (w) { return w[0] === o.wall; })) o.wall = d.wall;
+  if (typeof o.paint !== 'string' || !/^#[0-9a-f]{6}$/i.test(o.paint)) o.paint = d.paint;
+  if (!LIGHT_SET[o.light]) o.light = d.light;
+  if (o.cat !== 'all' && !CATS.some(function (c) { return c[0] === o.cat; })) o.cat = 'all';
+  if (TABS.indexOf(o.tab) < 0) o.tab = d.tab;
+  o.link = !!o.link;
+  return o;
+}
+
+let state = sanitize(load());
+let stage = null, downloads = null, thumbKey = '', thumbToken = 0, toastT = 0, modalUrl = null;
+const thumbs = {}, cards = {};
+
+function curL() { return LINE[state.line]; }
+function curFc() { return byId(frameOpts(curL(), state.mount), state.fc); }
+function curIc() { return byId(curL().colors, state.ic); }
+function curDims() { return frameDims(curL(), state.fc, state.cols, state.rows, state.mount); }
+function cfg() {
+  const L = curL();
+  return { L: L, F: frameGeo(L, state.fc, state.mount), fc: curFc(), ic: curIc(), cols: state.cols, rows: state.rows, slots: state.slots, op: state.op, lid: state.lid, mount: state.mount };
+}
+/* Bezeichnung folgt der Bedienart: Druckschalter, Wippschalter oder Kippschalter */
+function itemName(it) {
+  if (state.op === 'druck') return it.name;
+  const w = state.op === 'wippe' ? 'Wipp' : 'Kipp';
+  return it.name.replace('Druckschalter', w + 'schalter').replace('Drucktaster', w + 'taster');
+}
+
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 3400);
+}
+function segButtons(box, list, cur, fn) {
+  box.textContent = '';
+  list.forEach(function (x) {
+    box.appendChild(h('button', { type: 'button', 'aria-pressed': String(cur === x[0]), title: x[2] || null, onclick: function () { fn(x[0]); } },
+      x[2] && box.classList.contains('two') ? [h('b', { text: x[1] }), h('small', { text: x[2] })] : [x[1]]));
+  });
+}
+
+/* ---------- Bauart und Designlinie ---------- */
+const MOUNT_NOTE = {
+  up: 'Unterputz: bündig in der Wand, Rahmen im 60-mm-Raster.',
+  ap: 'Aufputz: derselbe Rahmen sitzt auf einem Gehäuse auf der Wand.',
+  nup: 'Nass, Unterputz: IP55 mit Dichtung und Klappdeckel, bündig in der Wand.',
+  nap: 'Nass, Aufputz: IP55-Gehäuse mit Klappdeckel für Keller, Garage und Aussenbereich.'
+};
+function glyph(l) {
+  const F = l.frame || l.mframe, k = 34 / l.size1, rc = Math.max(0.8, F.rc * k * 1.3), i = (l.wet ? 70 : 60) * k, off = 1 + (34 - i) / 2;
+  const inner = l.shape === 'circle'
+    ? '<circle cx="18" cy="18" r="' + (26.5 * k).toFixed(1) + '"/><rect x="13" y="13" width="10" height="10" rx="1.6"/>'
+    : '<rect x="' + off.toFixed(1) + '" y="' + off.toFixed(1) + '" width="' + i.toFixed(1) + '" height="' + i.toFixed(1) + '" rx="' + (l.wet ? 3 : 0.6) + '"/>' +
+      (l.rocker.round ? '<circle cx="18" cy="18" r="7.5"/>' : '<rect x="11.5" y="11.5" width="13" height="13" rx="0.8"/>');
+  return '<svg viewBox="0 0 36 36" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1" y="1" width="34" height="34" rx="' + rc.toFixed(1) + '"/>' + inner + '</svg>';
+}
+function renderLines() {
+  const box = $('#lines'), brands = [], list = linesFor(state.mount);
+  segButtons($('#mounts'), MOUNTS.map(function (m) { return [m[0], m[1], m[2]]; }), state.mount, setMount);
+  $('#mountNote').textContent = MOUNT_NOTE[state.mount];
+  box.textContent = '';
+  list.forEach(function (l) { if (brands.indexOf(l.brand) < 0) brands.push(l.brand); });
+  brands.forEach(function (b) {
+    const grid = h('div', { class: 'linegrid' });
+    list.forEach(function (l) {
+      if (l.brand !== b) return;
+      const d = frameDims(l, null, 1, 1, state.mount);
+      const btn = h('button', { class: 'linecard', type: 'button', 'aria-pressed': String(l.id === state.line), onclick: function () { setLine(l.id); } });
+      btn.innerHTML = glyph(l);
+      btn.appendChild(h('span', null, [h('b', { text: l.name }), h('small', { text: d.W + ' mm · ' + l.tag })]));
+      grid.appendChild(btn);
+    });
+    box.appendChild(h('div', { class: 'brandrow' }, [h('h3', { text: b }), grid]));
+  });
+}
+function resizeSlots(c, r) {
+  const old = state.slots, oc = state.cols, orr = state.rows, ns = [];
+  for (let y = 0; y < r; y++) for (let x = 0; x < c; x++) ns.push(x < oc && y < orr ? old[y * oc + x] : { item: 't13', rot: 0, flip: false });
+  state.cols = c; state.rows = r; state.slots = ns; state.sel = Math.min(state.sel, ns.length - 1);
+}
+/* nach Wechsel von Bauart oder Linie: Farben, Grösse und Einsätze passend machen */
+function normalize(prevF, prevI) {
+  const L = curL(), fo = frameOpts(L, state.mount);
+  let fc = byId(fo, state.fc);
+  if (!fc) {
+    const ref = prevF || { hex: '#ffffff' };
+    fc = ref.mat ? (byId(fo, ref.pair) || nearestIn(fo, ref.pair === 'weiss' ? '#ffffff' : '#000000')) : nearestIn(fo, ref.hex);
+    state.fc = fc.id;
+  }
+  if (!byId(L.colors, state.ic)) state.ic = nearestColor(L, prevI ? prevI.hex : '#ffffff').id;
+  if (state.link) syncInsert();
+  let c = state.cols, r = state.rows;
+  while (!sizeAllowed(c, r, state.mount)) { if (c >= r && c > 1) c--; else if (r > 1) r--; else break; }
+  if (c !== state.cols || r !== state.rows) resizeSlots(c, r);
+  let dropped = 0;
+  state.slots.forEach(function (s) { if (!itemAllowed(ITEM[s.item], L)) { s.item = 'blind'; s.rot = 0; s.flip = false; dropped++; } });
+  if (dropped) toast(dropped === 1 ? '1 Einsatz gibt es in ' + L.name + ' nicht – ersetzt durch eine Blindabdeckung.' : dropped + ' Einsätze gibt es in ' + L.name + ' nicht – ersetzt durch Blindabdeckungen.');
+}
+function setLine(id) {
+  if (id === state.line) return;
+  const pf = curFc(), pi = curIc();
+  state.line = id; normalize(pf, pi); update('line');
+}
+function setMount(m) {
+  if (m === state.mount) return;
+  const pf = curFc(), pi = curIc(), L = curL(), list = linesFor(m);
+  state.mount = m;
+  if (list.indexOf(L) < 0) state.line = (list.filter(function (l) { return l.brand === L.brand; })[0] || list[0]).id;
+  normalize(pf, pi); update('line');
+}
+
+/* ---------- Farbe ---------- */
+function swBg(c) {
+  if (!c.mat) return c.hex;
+  if (c.mat === 'glass') return 'linear-gradient(135deg,#ffffff 0%,' + c.hex + ' 40%,' + c.hex + ' 100%)';
+  if (c.mat === 'brass') return 'linear-gradient(135deg,#ecd9a8,#a8843f 55%,#e2c888)';
+  if (c.mat === 'slate') return 'linear-gradient(135deg,#5a5e61,#303336)';
+  return 'linear-gradient(135deg,#eef0f1,#9aa0a5 52%,#e2e5e7)';
+}
+function swatch(c, on, fn, label) {
+  return h('button', { class: 'sw' + (c.old ? ' old' : ''), type: 'button', title: c.name, 'aria-label': (label || '') + c.name, 'aria-pressed': String(on), style: 'background:' + swBg(c), onclick: fn });
+}
+function renderColors() {
+  const L = curL(), fb = $('#swFrame'), ib = $('#swIns'), fc = curFc(), ic = curIc(), box = L.wet || state.mount === 'ap';
+  fb.textContent = ''; ib.textContent = '';
+  frameOpts(L, state.mount).forEach(function (c) { fb.appendChild(swatch(c, c.id === state.fc, function () { setFrameColor(c.id); }, 'Rahmen ')); });
+  L.colors.forEach(function (c) { ib.appendChild(swatch(c, c.id === state.ic, function () { setInsColor(c.id); }, 'Einsätze ')); });
+  $('#frameLbl').textContent = box ? 'Gehäuse' : L.shape === 'circle' ? 'Abdeckplatte' : 'Rahmen';
+  $('#frameName').textContent = fc.name + (fc.mat && L.mname ? ' · ' + L.mname : '') + (fc.old ? ' · Auslauf' : '');
+  $('#insName').textContent = ic.name + (ic.old ? ' · Auslauf' : '');
+  $('#chkLink').checked = !!state.link;
+  $('#linkLbl').textContent = box ? 'Einsätze in der Gehäusefarbe' : 'Einsätze in der Rahmenfarbe';
+  $('#oldNote').hidden = !L.colors.some(function (c) { return c.old; });
+}
+function syncInsert() { const L = curL(), fc = curFc(); state.ic = fc.mat ? pairColor(L, fc).id : fc.id; }
+function setFrameColor(id) { state.fc = id; if (state.link) syncInsert(); update('color'); }
+function setInsColor(id) { state.ic = id; const fc = curFc(); state.link = !fc.mat && fc.id === id; update('color'); }
+
+/* ---------- Grösse ---------- */
+function hoverSize(c, r) {
+  $('#sizegrid').querySelectorAll('button').forEach(function (b) { b.classList.toggle('hov', +b.dataset.c <= c && +b.dataset.r <= r); });
+}
+function renderSize() {
+  const g = $('#sizegrid'), d = curDims(), L = curL();
+  g.textContent = '';
+  for (let r = 1; r <= 4; r++) for (let c = 1; c <= 4; c++) {
+    (function (c, r) {
+      g.appendChild(h('button', {
+        type: 'button', 'data-c': c, 'data-r': r, class: (c <= state.cols && r <= state.rows) ? 'in' : '',
+        'aria-label': c + ' × ' + r + ' Felder', title: c + ' × ' + r, disabled: !sizeAllowed(c, r, state.mount),
+        'aria-pressed': String(c === state.cols && r === state.rows),
+        onclick: function () { setSize(c, r); }, onmouseenter: function () { hoverSize(c, r); }, onmouseleave: function () { hoverSize(0, 0); }
+      }));
+    })(c, r);
+  }
+  $('#sizeMain').textContent = state.cols + ' × ' + state.rows + (state.cols * state.rows === 1 ? ' Feld' : ' Felder');
+  $('#sizeDims').textContent = ((L.wet || state.mount === 'ap') ? 'Gehäuse ' : L.shape === 'circle' ? 'Platte ' : 'Rahmen ') + d.W + ' × ' + d.H + ' mm';
+  $('#sizeNote').textContent = sizeNote(state.mount);
+}
+function setSize(c, r) {
+  if (!sizeAllowed(c, r, state.mount)) return;
+  resizeSlots(c, r); update('size');
+}
+
+/* ---------- Bestückung ---------- */
+function drawMini(cv, s) {
+  const src = thumbs[s.item], ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  if (!src || !src._ok) return;
+  ctx.save(); ctx.translate(cv.width / 2, cv.height / 2); ctx.rotate((s.rot || 0) * Math.PI / 2);
+  ctx.drawImage(src, -cv.width / 2, -cv.height / 2, cv.width, cv.height); ctx.restore();
+}
+function renderSlotbar() {
+  const s = state.slots[state.sel], it = ITEM[s.item], n = $('#slotName');
+  n.textContent = '';
+  n.appendChild(document.createTextNode('Feld ' + (state.sel + 1) + ' von ' + state.slots.length + ': '));
+  n.appendChild(h('b', { text: itemName(it) }));
+  $('#btnFlip').disabled = !(it.tog && state.op !== 'druck');
+  $('#btnFlip').textContent = state.op === 'kipp' ? 'Hebel umlegen' : 'Wippe umlegen';
+  $('#btnAll').disabled = state.slots.length < 2;
+}
+function renderMinimap() {
+  const m = $('#minimap'), cell = isNarrow() ? Math.max(38, Math.min(62, Math.floor(134 / state.rows))) : 72;
+  m.textContent = ''; m.style.setProperty('--c', state.cols); m.style.setProperty('--cell', cell + 'px');
+  state.slots.forEach(function (s, i) {
+    const cv = h('canvas', { width: 128, height: 128 });
+    m.appendChild(h('button', {
+      class: 'cell', type: 'button', 'aria-pressed': String(i === state.sel), 'aria-label': 'Feld ' + (i + 1) + ': ' + itemName(ITEM[s.item]),
+      onclick: function () { pick(i, false); }
+    }, [cv, h('span', { text: String(i + 1) })]));
+    drawMini(cv, s);
+  });
+  renderSlotbar();
+}
+function redrawMinis() {
+  $('#minimap').querySelectorAll('canvas').forEach(function (cv, k) { if (state.slots[k]) drawMini(cv, state.slots[k]); });
+}
+function pick(i, fromStage) {
+  if (i < 0 || i >= state.slots.length) return;
+  state.sel = i; save();
+  $('#minimap').querySelectorAll('.cell').forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+  renderSlotbar(); filterItems();
+  if (stage) stage.select(i);
+  if (fromStage) {
+    setTab('secFill');
+    if (!isNarrow()) { const sec = $('#secFill'); if (sec.scrollIntoView) sec.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+  }
+}
+function renderOps() {
+  const L = curL();
+  segButtons($('#ops'), OPS, state.op, function (v) { state.op = v; update('op'); });
+  $('#opName').textContent = OPS.filter(function (x) { return x[0] === state.op; })[0][2];
+  $('#lidRow').hidden = !L.wet;
+  if (L.wet) segButtons($('#lids'), [['auf', 'Offen'], ['zu', 'Geschlossen']], state.lid, function (v) { state.lid = v; update('op'); });
+}
+function buildCatalog() {
+  const cats = $('#cats'), box = $('#items');
+  cats.textContent = ''; box.textContent = '';
+  [['all', 'Alle']].concat(CATS).forEach(function (c) {
+    cats.appendChild(h('button', {
+      type: 'button', 'data-cat': c[0], 'aria-pressed': String(state.cat === c[0]), text: c[1],
+      onclick: function () {
+        state.cat = c[0]; save(); $('#q').value = '';
+        cats.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.cat === c[0])); });
+        filterItems();
+      }
+    }));
+  });
+  ITEMS.forEach(function (it) {
+    const cv = h('canvas', { width: 128, height: 128 }), nm = h('b', { text: it.name });
+    thumbs[it.id] = cv;
+    cards[it.id] = h('button', { class: 'item', type: 'button', 'data-id': it.id, onclick: function () { assign(it.id); } },
+      [cv, h('span', null, [nm, h('small', { text: it.sub })])]);
+    cards[it.id]._nm = nm;
+    box.appendChild(cards[it.id]);
+  });
+}
+function filterItems() {
+  const L = curL(), q = $('#q').value.trim().toLowerCase(), cur = state.slots[state.sel].item, catName = {}, usedCats = {};
+  CATS.forEach(function (c) { catName[c[0]] = c[1]; });
+  let n = 0;
+  ITEMS.forEach(function (it) {
+    const ok = itemAllowed(it, L), nm = itemName(it);
+    if (ok) usedCats[it.cat] = 1;
+    const hit = q ? (nm + ' ' + it.name + ' ' + it.sub + ' ' + catName[it.cat]).toLowerCase().indexOf(q) >= 0 : (state.cat === 'all' || it.cat === state.cat);
+    cards[it.id]._nm.textContent = nm;
+    cards[it.id].hidden = !(hit && ok);
+    cards[it.id].classList.toggle('on', it.id === cur);
+    if (hit && ok) n++;
+  });
+  $('#cats').querySelectorAll('button').forEach(function (b) { b.hidden = b.dataset.cat !== 'all' && !usedCats[b.dataset.cat]; });
+  if (!n && !q && state.cat !== 'all') { state.cat = 'all'; $('#cats').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.cat === 'all')); }); return filterItems(); }
+  $('#noItems').hidden = n > 0;
+}
+function assign(id) {
+  state.slots[state.sel] = { item: id, rot: 0, flip: false };
+  update('slot');
+}
+
+/* ---------- Wand und Licht ---------- */
+function renderEnv() {
+  const p = $('#paints');
+  segButtons($('#walls'), WALLS, state.wall, function (v) { state.wall = v; envChanged(); });
+  segButtons($('#lights'), LIGHTS, state.light, function (v) { state.light = v; envChanged(); });
+  p.textContent = '';
+  p.hidden = !(state.wall === 'abrieb' || state.wall === 'glatt');
+  PAINTS.forEach(function (x) {
+    p.appendChild(h('button', { class: 'sw', type: 'button', title: x[1], 'aria-label': 'Wandfarbe ' + x[1], 'aria-pressed': String(state.paint === x[0]), style: 'background:' + x[0], onclick: function () { state.paint = x[0]; envChanged(); } }));
+  });
+}
+function envChanged() {
+  save(); renderEnv();
+  if (stage) { stage.setLight(state.light); stage.setWall(state.wall, state.paint); }
+}
+
+/* ---------- Stückliste ---------- */
+function partsData() {
+  const L = curL(), fc = curFc(), ic = curIc(), d = curDims(), out = [], cnt = {}, order = [], sz = state.cols + '×' + state.rows;
+  const what = L.wet ? (state.mount === 'nap' ? 'NAP-Gehäuse IP55 ' : 'NUP-Abdeckung IP55 ') : state.mount === 'ap' ? 'AP-Gehäuse mit Rahmen ' : L.shape === 'circle' ? 'Abdeckplatte ' : 'Abdeckrahmen ';
+  out.push({ n: 1, t: what + sz + ' · ' + L.brand + ' ' + L.name + (fc.mat && L.mname ? ' ' + L.mname : ''), s: fc.name + ' · ' + d.W + ' × ' + d.H + ' mm' });
+  state.slots.forEach(function (s) { if (!cnt[s.item]) { cnt[s.item] = 0; order.push(s.item); } cnt[s.item]++; });
+  order.forEach(function (id) {
+    const it = ITEM[id];
+    out.push({ n: cnt[id], t: itemName(it) + ' · ' + L.name + (L.wet ? ' IP55' : state.mount === 'ap' ? ' AP' : ''), s: it.sub + ' · ' + ic.name });
+  });
+  return out;
+}
+function renderList() {
+  const ul = $('#parts');
+  ul.textContent = '';
+  partsData().forEach(function (p) {
+    ul.appendChild(h('li', null, [h('span', { class: 'n', text: p.n + ' ×' }), h('span', null, [p.t, h('small', { text: p.s })])]));
+  });
+}
+function copyList() {
+  const L = curL();
+  const txt = 'Kombination ' + state.cols + '×' + state.rows + ' – ' + L.brand + ' ' + L.name + '\n' +
+    partsData().map(function (p) { return p.n + ' × ' + p.t + ' (' + p.s + ')'; }).join('\n');
+  const fail = function () {
+    try { window.getSelection().selectAllChildren($('#parts')); toast('Liste markiert – jetzt kopieren.'); }
+    catch (e) { toast('Kopieren ist hier nicht möglich.'); }
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(function () { toast('Stückliste kopiert.'); }, fail);
+  else fail();
+}
+function renderChips() {
+  const L = curL(), fc = curFc(), d = curDims(), m = MOUNTS.filter(function (x) { return x[0] === state.mount; })[0];
+  $('#chipLine').textContent = L.brand + ' ' + L.name + ' · ' + m[2].split(' ')[0] + ' · ' + fc.name;
+  $('#chipDims').textContent = state.cols + ' × ' + state.rows + ' · ' + d.W + ' × ' + d.H + ' mm';
+}
+
+/* ---------- Vorschaubilder der Einsätze ---------- */
+function refreshThumbs() {
+  if (!stage) return;
+  const L = curL(), ic = curIc(), opt = { op: state.op, lid: state.lid }, key = [L.id, ic.id, state.op, state.lid].join('|');
+  if (key === thumbKey) return;
+  thumbKey = key;
+  const token = ++thumbToken, used = {}, list = [];
+  state.slots.forEach(function (s) { if (!used[s.item]) { used[s.item] = 1; list.push(ITEM[s.item]); } });
+  ITEMS.forEach(function (it) { if (!used[it.id] && itemAllowed(it, L)) list.push(it); });
+  let i = 0;
+  const step = function () {
+    if (token !== thumbToken) return;
+    const end = Math.min(list.length, i + 6);
+    for (; i < end; i++) {
+      const cv = thumbs[list[i].id];
+      try { cv._ok = stage.thumb(cv, L, list[i].id, ic, opt); } catch (e) { cv._ok = false; if (window.console) console.error('Vorschau', list[i].id, e); }
+    }
+    stage.afterThumbs(); redrawMinis();
+    if (i < list.length) setTimeout(step, 24);
+  };
+  setTimeout(step, 80);
+}
+
+/* ---------- alles neu zeichnen ---------- */
+function pushStage() {
+  if (!stage) return;
+  try { stage.setConfig(cfg()); stage.select(state.sel); }
+  catch (e) { if (window.console) console.error(e); toast('Diese Zusammenstellung konnte nicht dargestellt werden.'); }
+  refreshThumbs();
+}
+function update(kind) {
+  save();
+  if (kind === 'line') renderLines();
+  if (kind === 'line' || kind === 'color') renderColors();
+  if (kind !== 'slot' && kind !== 'op') renderSize();
+  if (kind === 'line' || kind === 'op') renderOps();
+  renderMinimap(); filterItems(); renderList(); renderChips();
+  pushStage();
+}
+function setTab(id) {
+  if (TABS.indexOf(id) < 0) return;
+  state.tab = id; save();
+  TABS.forEach(function (t) { document.getElementById(t).classList.toggle('active', t === id); });
+  $('#tabbar').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.tab === id)); });
+  $('#panel').dataset.tab = id;
+  if (isNarrow()) $('#panel').scrollTop = 0;
+}
+
+/* ---------- Aktionen ---------- */
+function randomize() {
+  const pickOf = function (a) { return a[Math.floor(Math.random() * a.length)]; };
+  const L = pickOf(linesFor(state.mount)), fc = pickOf(frameOpts(L, state.mount).filter(function (c) { return !c.old; }));
+  const sz = pickOf([[1, 1], [2, 1], [2, 1], [3, 1], [3, 1], [1, 2], [1, 3], [2, 2], [4, 1], [3, 2], [2, 3]].filter(function (s) { return sizeAllowed(s[0], s[1], state.mount); }));
+  const pool = ITEMS.filter(function (it) { return itemAllowed(it, L) && it.id !== 'blind'; });
+  const fav = ['t13x3', 't13', 's3', 's33', 'st2', 'k1', 'rj1', 'dim', 't23', 't13x2'].filter(function (id) { return itemAllowed(ITEM[id], L); });
+  state.line = L.id; state.fc = fc.id; state.link = true; state.ic = fc.mat ? pairColor(L, fc).id : fc.id;
+  state.cols = sz[0]; state.rows = sz[1]; state.slots = []; state.sel = 0;
+  for (let i = 0; i < sz[0] * sz[1]; i++) state.slots.push({ item: Math.random() < 0.6 ? pickOf(fav) : pickOf(pool).id, rot: 0, flip: Math.random() < 0.3 });
+  update('line');
+}
+function closeModal() {
+  $('#modal').hidden = true;
+  if (modalUrl) { URL.revokeObjectURL(modalUrl); modalUrl = null; $('#modalImg').removeAttribute('src'); }
+}
+function showImage(blob, name) {
+  if (modalUrl) URL.revokeObjectURL(modalUrl);
+  modalUrl = URL.createObjectURL(blob);
+  $('#modalImg').src = modalUrl;
+  const a = $('#modalLink');
+  if (!window.claude) { a.hidden = false; a.href = modalUrl; a.setAttribute('download', name); } else a.hidden = true;
+  $('#modal').hidden = false; $('#modalClose').focus();
+}
+/* Bild übergeben: in der eingebetteten Ansicht über die Plattform, sonst als Download oder über das Teilen-Menü des Handys */
+function deliver(blob, name) {
+  if (downloads) {
+    downloads.save({ filename: name, data: blob }).then(function () { toast('Bild gespeichert.'); }, function (err) {
+      if (err && err.code === 'declined') return;
+      showImage(blob, name);
+    });
+    return;
+  }
+  if (window.claude) { showImage(blob, name); return; }
+  try {
+    const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const file = typeof File === 'function' ? new File([blob], name, { type: 'image/png' }) : null;
+    if (coarse && file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: 'Kombi-Planer' }).catch(function (e) { if (!e || e.name !== 'AbortError') showImage(blob, name); });
+      return;
+    }
+    const url = URL.createObjectURL(blob), a = h('a', { href: url, download: name });
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+    toast('Bild wird heruntergeladen.');
+  } catch (e) { showImage(blob, name); }
+}
+function saveImage() {
+  if (!stage) { toast('Ohne 3D-Vorschau gibt es kein Bild zum Speichern.'); return; }
+  const btn = $('#btnSave'), L = curL(), name = 'kombination-' + L.id + '-' + state.cols + 'x' + state.rows + '.png';
+  btn.disabled = true;
+  stage.snapshot(function (blob) {
+    btn.disabled = false;
+    if (!blob) { toast('Das Bild konnte nicht erzeugt werden.'); return; }
+    deliver(blob, name);
+  });
+}
+
+/* ---------- Start ---------- */
+(function init() {
+  const progEl = $('#progress'), progBar = progEl.firstElementChild;
+  buildCatalog(); renderLines(); renderColors(); renderSize(); renderOps(); renderMinimap(); filterItems(); renderEnv(); renderList(); renderChips();
+  setTab(state.tab);
+
+  $('#btnRandom').addEventListener('click', randomize);
+  $('#btnSave').addEventListener('click', saveImage);
+  $('#btnCopy').addEventListener('click', copyList);
+  $('#btnRot').addEventListener('click', function () { const s = state.slots[state.sel]; s.rot = ((s.rot || 0) + 1) % 4; update('slot'); });
+  $('#btnFlip').addEventListener('click', function () { const s = state.slots[state.sel]; s.flip = !s.flip; update('slot'); });
+  $('#btnAll').addEventListener('click', function () {
+    const s = state.slots[state.sel];
+    state.slots = state.slots.map(function () { return { item: s.item, rot: s.rot, flip: s.flip }; });
+    update('slot');
+  });
+  $('#chkLink').addEventListener('change', function (e) { state.link = e.target.checked; if (state.link) syncInsert(); update('color'); });
+  $('#q').addEventListener('input', filterItems);
+  $('#modalClose').addEventListener('click', closeModal);
+  $('#modal').addEventListener('click', function (e) { if (e.target === e.currentTarget) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('#modal').hidden) closeModal(); });
+  $('#panel').querySelectorAll('.steps button').forEach(function (b) {
+    b.addEventListener('click', function () { const t = document.getElementById(b.dataset.go); if (t && t.scrollIntoView) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  });
+  $('#tabbar').querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
+  let wasNarrow = isNarrow();
+  window.addEventListener('resize', function () { if (isNarrow() !== wasNarrow) { wasNarrow = isNarrow(); renderMinimap(); } });
+
+  if (window.claude && typeof window.claude.use === 'function') {
+    try { window.claude.use('downloads').then(function (d) { downloads = d || null; }, function () { downloads = null; }); } catch (e) { downloads = null; }
+  }
+
+  stage = T ? createStage($('#stage'), $('#view'), $('#overlay'), {
+    onPick: function (i) { pick(i, true); },
+    onProgress: function (p) { progBar.style.width = Math.round(p * 100) + '%'; progEl.classList.toggle('on', p < 1); }
+  }) : null;
+  if (!stage) { $('#nogl').hidden = false; $('#view').hidden = true; return; }
+  $('#vFront').addEventListener('click', function () { stage.view({ az: 0, el: 0, zoom: 1 }); });
+  $('#vSide').addEventListener('click', function () { stage.view({ az: -0.42, el: 0.16, zoom: 1 }); });
+  $('#vClose').addEventListener('click', function () { const v = stage.viewNow(); stage.view({ az: v.az, el: v.el, zoom: v.zoom < 0.7 ? 1 : 0.5 }); });
+  stage.setLight(state.light); stage.setWall(state.wall, state.paint);
+  stage.resize(); pushStage();
+
+  /* nur beim lokalen Testen: Prüfhilfen */
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+    window.__kp = {
+      state: function () { return state; },
+      converge: function () { stage.finishNow(); return 'ok'; },
+      view: function (v) { stage.view(v); },
+      first: function () { stage.firstFrameOnly(); return 'ok'; },
+      set: function (patch) { state = sanitize(Object.assign({}, state, patch)); thumbKey = ''; update('line'); renderEnv(); setTab(state.tab); stage.setLight(state.light); stage.setWall(state.wall, state.paint); return state; },
+      testAll: function () {
+        const out = [];
+        LINES.forEach(function (L) {
+          OPS.forEach(function (op) {
+            ITEMS.forEach(function (it) {
+              if (!itemAllowed(it, L)) return;
+              try {
+                const k = new Kit(); buildSingle(k, L, it.id, { op: op[0], lid: 'auf' }); let tris = 0;
+                for (const n in k.g) {
+                  const g = k.g[n]; tris += g.i.length / 3;
+                  for (let i = 0; i < g.p.length; i++) if (!isFinite(g.p[i]) || !isFinite(g.n[i])) { out.push(L.id + '/' + op[0] + '/' + it.id + ': NaN in ' + n); break; }
+                }
+                if (tris > 60000) out.push(L.id + '/' + it.id + ': ' + tris + ' tris');
+              } catch (e) { out.push(L.id + '/' + op[0] + '/' + it.id + ': ' + e.message); }
+            });
+          });
+        });
+        return out;
+      }
+    };
+  }
+})();
+
+})();
+
+</script>
+</body>
+</html>

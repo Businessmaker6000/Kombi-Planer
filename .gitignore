@@ -1,0 +1,5 @@
+# Zwischenstände und lokale Einstellungen
+dev/bundle.js
+dev/patch*.js
+kombi-planer.html
+.claude/
