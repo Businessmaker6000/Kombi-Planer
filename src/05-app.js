@@ -324,7 +324,7 @@ function renderSlotbar() {
   $('#btnAll').disabled = af().slots.length < 2;
 }
 function renderMinimap() {
-  const a = af(), m = $('#minimap'), cell = isNarrow() ? Math.max(38, Math.min(62, Math.floor(134 / a.rows))) : 72;
+  const a = af(), m = $('#minimap'), cell = isNarrow() ? Math.max(34, Math.min(48, Math.floor(100 / a.rows))) : 72;
   m.textContent = ''; m.style.setProperty('--c', a.cols); m.style.setProperty('--cell', cell + 'px');
   a.slots.forEach(function (s, i) {
     const cv = h('canvas', { width: 128, height: 128 });
@@ -521,7 +521,7 @@ function setTab(id) {
   state.tab = id; save();
   TABS.forEach(function (t) { document.getElementById(t).classList.toggle('active', t === id); });
   $('#tabbar').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.tab === id)); });
-  $('#panel').dataset.tab = id;
+  $('#panel').dataset.tab = id; document.body.dataset.tab = id;
   if (isNarrow()) $('#panel').scrollTop = 0;
 }
 
