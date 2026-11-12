@@ -146,6 +146,7 @@ class GB {
       const NX = e[0] * nx + e[4] * ny + e[8] * nz, NY = e[1] * nx + e[5] * ny + e[9] * nz, NZ = e[2] * nx + e[6] * ny + e[10] * nz;
       x = X; y = Y; z = Z; nx = NX; ny = NY; nz = NZ;
     }
+    if (this.kit && this.kit.dx) x += this.kit.dx;
     const l = Math.hypot(nx, ny, nz) || 1;
     this.p.push(x, y, z); this.n.push(nx / l, ny / l, nz / l);
     if (u !== undefined) this.u.push(u, w); else this.u.push(x * 0.02, y * 0.02);
@@ -247,7 +248,8 @@ class GB {
 
 /* Ein Kit sammelt Geometrie getrennt nach Material */
 class Kit {
-  constructor() { this.g = {}; this.m = null; }
+  /* dx: Verschiebung in x für einen Rahmen der Reihe, wirkt auf alle seine Teile */
+  constructor() { this.g = {}; this.m = null; this.dx = 0; }
   b(name) { return this.g[name] || (this.g[name] = new GB(this)); }
   setM(m) { this.m = m || null; }
 }

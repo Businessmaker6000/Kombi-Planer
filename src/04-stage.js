@@ -123,7 +123,7 @@ function plastic(hex, finish) {
   let m;
   if (finish === 'metallic') m = new T.MeshPhysicalMaterial({ color: hex, roughness: 0.38, metalness: 0.75, clearcoat: 0.3, clearcoatRoughness: 0.2 });
   else {
-    const f = finish === 'gloss' ? [0.24, 0.6, 0.08] : finish === 'matte' ? [0.6, 0, 0] : [0.4, 0.25, 0.25];
+    const f = finish === 'lacquer' ? [0.14, 1, 0.04] : finish === 'gloss' ? [0.24, 0.6, 0.08] : finish === 'matte' ? [0.6, 0, 0] : [0.4, 0.25, 0.25];
     m = new T.MeshPhysicalMaterial({ color: hex, roughness: f[0], metalness: 0, clearcoat: f[1], clearcoatRoughness: f[2] });
   }
   return MAT[id] = setEnv(m, 1);
@@ -305,7 +305,7 @@ function createStage(stageEl, canvas, svg, hooks) {
   const wallMat = MAT.wall = setEnv(new T.MeshStandardMaterial({ color: 0xf2f0ea, roughness: 0.92 }), 1);
   const wall = new T.Mesh(new T.PlaneGeometry(WALL_W, WALL_H), wallMat);
   /* Wand mit Ausschnitt für den Einlasskasten, damit die Kragen der Steckdosen in die Wand reichen */
-  function wallGeo(hw, hh) { const gb = new GB(null); gb.cap(cRRect(WALL_W, WALL_H, 0), hw > 1 ? [cRRect(hw, hh, 0)] : [], 0, 1); return gb.geometry(); }
+  function wallGeo(holes) { const gb = new GB(null); gb.cap(cRRect(WALL_W, WALL_H, 0), holes.map(function (o) { return cXf(cRRect(o.w, o.h, 0), o.x, 0, 0); }), 0, 1); return gb.geometry(); }
   wall.receiveShadow = true; scene.add(wall);
   const key = new T.DirectionalLight(0xffffff, 2), dome = new T.DirectionalLight(0xffffff, 1.5);
   [key, dome].forEach(function (l, i) {
@@ -345,7 +345,7 @@ function createStage(stageEl, canvas, svg, hooks) {
   const LD = 700, tgt = new T.Vector3(0, 0, 4), tmp = new T.Vector3();
   const keyDir = new T.Vector3(), e1 = new T.Vector3(), e2 = new T.Vector3(), skyDir = new T.Vector3(-0.3, 0.75, 0.6).normalize();
   let light = LIGHT_SET.tag, domeMean = 0.5;
-  let dims = { W: 88, H: 88, top: 9, pitch: PITCH }, cols = 1, rows = 1, cfgNow = null;
+  let dims = { W: 88, H: 88, top: 9, pitch: PITCH }, layout = [], total = 1, layoutKey = '';
   let vw = 300, vh = 200, bufW = 300, bufH = 200;
   let az = -0.36, el = 0.13, zoom = 1, fitDist = 600;
   let frame = 0, pending = false, sel = -1, hov = -1, exportRT = null;
@@ -404,8 +404,19 @@ function createStage(stageEl, canvas, svg, hooks) {
   /* Auswahlrahmen als SVG über dem Bild */
   const ovSel = svg.querySelector('#ovSel'), ovHov = svg.querySelector('#ovHover');
   function proj(x, y, z) { tmp.set(x, y, z).project(camera); return ((tmp.x * 0.5 + 0.5) * vw).toFixed(1) + ',' + ((-tmp.y * 0.5 + 0.5) * vh).toFixed(1); }
+  /* Mitte und halbe Kantenlänge eines Feldes; die Felder zählen über alle Rahmen der Reihe */
+  function slotCell(i) {
+    const P = dims.pitch || PITCH;
+    for (let k = 0; k < layout.length; k++) {
+      const f = layout[k], j = i - f.base;
+      if (j >= 0 && j < f.cols * f.rows) { const c = j % f.cols, r = Math.floor(j / f.cols); return { x: f.cx + (c - (f.cols - 1) / 2) * P, y: ((f.rows - 1) / 2 - r) * P, h: P / 2 - 1 }; }
+    }
+    return null;
+  }
   function slotPoly(i) {
-    const P = dims.pitch || PITCH, c = i % cols, r = Math.floor(i / cols), x = (c - (cols - 1) / 2) * P, y = ((rows - 1) / 2 - r) * P, h = P / 2 - 1, z = dims.top + 0.6;
+    const s = slotCell(i);
+    if (!s) return '';
+    const x = s.x, y = s.y, h = s.h, z = dims.top + 0.6;
     return [proj(x - h, y - h, z), proj(x + h, y - h, z), proj(x + h, y + h, z), proj(x - h, y + h, z)].join(' ');
   }
   let over = false, idleT = 0;
@@ -414,17 +425,20 @@ function createStage(stageEl, canvas, svg, hooks) {
     if (ms) idleT = setTimeout(function () { svg.classList.add('idle'); }, ms);
   }
   function drawOverlay() {
-    const n = cols * rows;
-    if (sel >= 0 && sel < n) { ovSel.setAttribute('points', slotPoly(sel)); ovSel.style.display = ''; } else ovSel.style.display = 'none';
-    if (hov >= 0 && hov < n && hov !== sel) { ovHov.setAttribute('points', slotPoly(hov)); ovHov.style.display = ''; } else ovHov.style.display = 'none';
+    if (sel >= 0 && sel < total) { ovSel.setAttribute('points', slotPoly(sel)); ovSel.style.display = ''; } else ovSel.style.display = 'none';
+    if (hov >= 0 && hov < total && hov !== sel) { ovHov.setAttribute('points', slotPoly(hov)); ovHov.style.display = ''; } else ovHov.style.display = 'none';
   }
   function slotAt(e) {
     const r = canvas.getBoundingClientRect();
     const nx = (e.clientX - r.left) / r.width * 2 - 1, ny = -((e.clientY - r.top) / r.height * 2 - 1);
     const o = camera.position, p = new T.Vector3(nx, ny, 0.5).unproject(camera).sub(o), t = (dims.top - o.z) / p.z;
     if (!(t > 0)) return -1;
-    const P = dims.pitch || PITCH, c = Math.floor((o.x + p.x * t) / P + cols / 2), rr = Math.floor(rows / 2 - (o.y + p.y * t) / P);
-    return (c >= 0 && c < cols && rr >= 0 && rr < rows) ? rr * cols + c : -1;
+    const P = dims.pitch || PITCH, X = o.x + p.x * t, Y = o.y + p.y * t;
+    for (let k = 0; k < layout.length; k++) {
+      const f = layout[k], c = Math.floor((X - f.cx) / P + f.cols / 2), rr = Math.floor(f.rows / 2 - Y / P);
+      if (c >= 0 && c < f.cols && rr >= 0 && rr < f.rows) return f.base + rr * f.cols + c;
+    }
+    return -1;
   }
 
   /* Bildberechnung */
@@ -577,12 +591,17 @@ function createStage(stageEl, canvas, svg, hooks) {
   const api = {
     accumulate: canAcc,
     setConfig: function (cfg) {
-      const sizeChanged = !cfgNow || cfgNow.cols !== cfg.cols || cfgNow.rows !== cfg.rows || cfgNow.L !== cfg.L || cfgNow.F !== cfg.F;
+      const key = JSON.stringify([cfg.L.id, cfg.mount, cfg.F, cfg.frames.map(function (f) { return [f.cols, f.rows]; })]), sizeChanged = key !== layoutKey;
+      layoutKey = key;
       clearGroup(group);
       const kit = new Kit();
-      dims = buildCombination(kit, cfg); cols = cfg.cols; rows = cfg.rows; cfgNow = cfg;
+      dims = buildRow(kit, cfg); layout = dims.frames; total = 0;
+      layout.forEach(function (f) { f.base = total; total += f.cols * f.rows; });
       addMeshes(group, kit, resolver(cfg));
-      if (sizeChanged) { computeFit(); fitShadow(); wall.geometry.dispose(); wall.geometry = dims.hole ? wallGeo(Math.min(dims.ow + 4, dims.W - 8), Math.min(dims.oh + 4, dims.H - 8)) : wallGeo(0, 0); }
+      if (sizeChanged) {
+        computeFit(); fitShadow(); wall.geometry.dispose();
+        wall.geometry = wallGeo(dims.hole ? layout.map(function (f) { return { x: f.cx, w: Math.min(f.ow + 4, f.W - 8), h: Math.min(f.oh + 4, f.H - 8) }; }) : []);
+      }
       applyCam(); reset();
     },
     setWall: function (kind, paint) {

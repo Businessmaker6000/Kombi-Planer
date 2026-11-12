@@ -56,7 +56,17 @@
       </section>
 
       <section class="sec" id="secSize">
-        <h2>Grösse</h2>
+        <h2>Grösse und Reihe</h2>
+        <div class="row-h"><span class="lbl">Rahmen nebeneinander</span><span class="val" id="rowCount"></span></div>
+        <div class="seg" id="frameStrip" role="group" aria-label="Rahmen in der Reihe"></div>
+        <div class="slotbtns">
+          <button class="btn sm" id="btnAddKombi" type="button">+ Kombi</button>
+          <button class="btn sm" id="btnAddSingle" type="button">+ Einzelstück</button>
+          <button class="btn sm" id="btnFrameLeft" type="button" aria-label="Rahmen nach links">◀</button>
+          <button class="btn sm" id="btnFrameRight" type="button" aria-label="Rahmen nach rechts">▶</button>
+          <button class="btn sm" id="btnFrameDel" type="button">Rahmen entfernen</button>
+        </div>
+        <p class="help" id="rowNote"></p>
         <div class="sizewrap">
           <div class="sizegrid" id="sizegrid" role="group" aria-label="Anzahl Felder"></div>
           <div class="sizeinfo">

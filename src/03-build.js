@@ -548,20 +548,31 @@ function buildFrame(kit, L, F, cols, rows, info) {
   return { W: W, H: H, ow: ow, oh: oh };
 }
 
-/* ganze Kombination: Einsätze + Rahmen */
-function buildCombination(kit, cfg) {
-  const L = cfg.L, F = cfg.F, cols = cfg.cols, rows = cfg.rows, P = L.pitch || PITCH;
-  const top = frameTop(F) + L.insert.proud, info = [], opt = { op: cfg.op, lid: cfg.lid };
-  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
-    const s = cfg.slots[r * cols + c], x = (c - (cols - 1) / 2) * P, y = ((rows - 1) / 2 - r) * P;
-    const M = M4().makeTranslation(x, y, 0).multiply(M4().makeRotationZ(-(s.rot || 0) * H_PI));
-    const b = new IB(kit, L, M, top, s, opt);
-    (ITEM[s.item] || ITEM.blind).b(b);
-    b.finish();
-    info.push({ x: x, y: y, d: b.diam() });
-  }
-  const d = buildFrame(kit, L, F, cols, rows, info);
-  return { W: d.W, H: d.H, ow: d.ow, oh: d.oh, top: top, pitch: P, hole: !F.box };
+/* Abstand zwischen zwei Rahmen einer Reihe in mm */
+const ROW_GAP = 14;
+/* ganze Reihe: jeder Rahmen mit seinen Einsätzen, nebeneinander und mittig auf der Wand */
+function buildRow(kit, cfg) {
+  const L = cfg.L, F = cfg.F, P = L.pitch || PITCH, top = frameTop(F) + L.insert.proud, opt = { op: cfg.op, lid: cfg.lid };
+  const sz = cfg.frames.map(function (f) { return { W: f.cols * P + 2 * F.border, H: f.rows * P + 2 * F.border }; });
+  const TW = sz.reduce(function (s, d) { return s + d.W; }, 0) + ROW_GAP * (sz.length - 1), frames = [];
+  let x = -TW / 2;
+  cfg.frames.forEach(function (fr, k) {
+    const cols = fr.cols, rows = fr.rows, cx = x + sz[k].W / 2, info = [];
+    x += sz[k].W + ROW_GAP;
+    kit.dx = cx;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const s = fr.slots[r * cols + c], lx = (c - (cols - 1) / 2) * P, ly = ((rows - 1) / 2 - r) * P;
+      const M = M4().makeTranslation(lx, ly, 0).multiply(M4().makeRotationZ(-(s.rot || 0) * H_PI));
+      const b = new IB(kit, L, M, top, s, opt);
+      (ITEM[s.item] || ITEM.blind).b(b);
+      b.finish();
+      info.push({ x: lx, y: ly, d: b.diam() });
+    }
+    const d = buildFrame(kit, L, F, cols, rows, info);
+    kit.dx = 0;
+    frames.push({ cx: cx, cols: cols, rows: rows, ow: d.ow, oh: d.oh, W: d.W, H: d.H });
+  });
+  return { W: TW, H: Math.max.apply(null, sz.map(function (d) { return d.H; })), top: top, pitch: P, hole: !F.box, frames: frames };
 }
 
 /* einzelner Einsatz für Vorschaubilder */

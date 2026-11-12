@@ -34,15 +34,28 @@ const isNarrow = function () { return window.innerWidth <= 900; };
 
 /* ---------- Zustand ---------- */
 const STORE_KEY = 'kombi-planer-v2', TABS = ['secLine', 'secColor', 'secSize', 'secFill', 'secEnv', 'secList'];
+/* höchstens so viele Rahmen nebeneinander in einer Reihe */
+const MAX_FRAMES = 6;
 function defaults() {
   return {
-    mount: 'up', line: 'ediziodue', fc: 'weiss', ic: 'weiss', link: true, cols: 2, rows: 1,
-    slots: [{ item: 's3', rot: 0, flip: false }, { item: 't13x3', rot: 0, flip: false }],
-    sel: 0, op: 'druck', lid: 'auf', wall: 'abrieb', paint: '#f2f0ea', light: 'tag', cat: 'all', tab: 'secLine'
+    mount: 'up', line: 'ediziodue', fc: 'weiss', ic: 'weiss', link: true,
+    frames: [{ cols: 2, rows: 1, slots: [{ item: 's3', rot: 0, flip: false }, { item: 't13x3', rot: 0, flip: false }] }],
+    act: 0, sel: 0, op: 'druck', lid: 'auf', wall: 'abrieb', paint: '#f2f0ea', light: 'tag', cat: 'all', tab: 'secLine'
   };
 }
 function load() { try { const s = JSON.parse(localStorage.getItem(STORE_KEY)); return s && typeof s === 'object' ? s : null; } catch (e) { return null; } }
 function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* ohne Speicher weiter */ } }
+/* ein Rahmen der Reihe: Grösse prüfen, fehlende Einsätze ergänzen */
+function sanitizeFrame(q, L, mount) {
+  let c = (q && q.cols) | 0, r = (q && q.rows) | 0;
+  if (!sizeAllowed(c, r, mount)) { c = 2; r = 1; }
+  const src = q && Array.isArray(q.slots) ? q.slots : [], slots = [];
+  for (let i = 0; i < c * r; i++) {
+    const x = src[i] || {}, it = ITEM[x.item];
+    slots.push({ item: it && itemAllowed(it, L) ? it.id : 't13', rot: ((x.rot | 0) % 4 + 4) % 4, flip: !!x.flip });
+  }
+  return { cols: c, rows: r, slots: slots };
+}
 function sanitize(s) {
   const d = defaults();
   if (!s) return d;
@@ -52,15 +65,12 @@ function sanitize(s) {
   const L = LINE[o.line], fo = frameOpts(L, o.mount);
   if (!byId(fo, o.fc)) o.fc = fo[0].id;
   if (!byId(L.colors, o.ic)) o.ic = L.colors[0].id;
-  o.cols = o.cols | 0; o.rows = o.rows | 0;
-  if (!sizeAllowed(o.cols, o.rows, o.mount)) { o.cols = 2; o.rows = 1; }
-  const n = o.cols * o.rows, src = Array.isArray(o.slots) ? o.slots : [], slots = [];
-  for (let i = 0; i < n; i++) {
-    const q = src[i] || {}, it = ITEM[q.item];
-    slots.push({ item: it && itemAllowed(it, L) ? it.id : 't13', rot: ((q.rot | 0) % 4 + 4) % 4, flip: !!q.flip });
-  }
-  o.slots = slots;
-  o.sel = Math.max(0, Math.min(n - 1, o.sel | 0));
+  /* ältere Fassung ohne Reihe: die einzelne Kombination wird der erste Rahmen */
+  const list = Array.isArray(s.frames) && s.frames.length ? s.frames : [{ cols: s.cols, rows: s.rows, slots: s.slots }];
+  o.frames = list.slice(0, MAX_FRAMES).map(function (q) { return sanitizeFrame(q, L, o.mount); });
+  delete o.cols; delete o.rows; delete o.slots;
+  o.act = Math.max(0, Math.min(o.frames.length - 1, o.act | 0));
+  o.sel = Math.max(0, Math.min(o.frames[o.act].slots.length - 1, o.sel | 0));
   if (!OPS.some(function (x) { return x[0] === o.op; })) o.op = d.op;
   if (o.lid !== 'zu') o.lid = 'auf';
   if (!WALLS.some(function (w) { return w[0] === o.wall; })) o.wall = d.wall;
@@ -79,10 +89,25 @@ const thumbs = {}, cards = {};
 function curL() { return LINE[state.line]; }
 function curFc() { return byId(frameOpts(curL(), state.mount), state.fc); }
 function curIc() { return byId(curL().colors, state.ic); }
-function curDims() { return frameDims(curL(), state.fc, state.cols, state.rows, state.mount); }
+/* der aktive Rahmen wird in Grösse und Bestückung bearbeitet */
+function af() { return state.frames[state.act]; }
+/* Nummer des gewählten Feldes über alle Rahmen der Reihe */
+function gidx() {
+  let b = 0;
+  for (let k = 0; k < state.act; k++) b += state.frames[k].cols * state.frames[k].rows;
+  return b + state.sel;
+}
+function slotTotal() { return state.frames.reduce(function (s, f) { return s + f.cols * f.rows; }, 0); }
+function curDims() { return frameDims(curL(), state.fc, af().cols, af().rows, state.mount); }
+/* Gesamtmass der Reihe: die Rahmen nebeneinander, mit Abstand ROW_GAP */
+function rowDims() {
+  const L = curL(), F = frameGeo(L, state.fc, state.mount), P = L.pitch || PITCH;
+  const sz = state.frames.map(function (f) { return { W: f.cols * P + 2 * F.border, H: f.rows * P + 2 * F.border }; });
+  return { W: sz.reduce(function (s, d) { return s + d.W; }, 0) + ROW_GAP * (sz.length - 1), H: Math.max.apply(null, sz.map(function (d) { return d.H; })) };
+}
 function cfg() {
   const L = curL();
-  return { L: L, F: frameGeo(L, state.fc, state.mount), fc: curFc(), ic: curIc(), cols: state.cols, rows: state.rows, slots: state.slots, op: state.op, lid: state.lid, mount: state.mount };
+  return { L: L, F: frameGeo(L, state.fc, state.mount), fc: curFc(), ic: curIc(), frames: state.frames, op: state.op, lid: state.lid, mount: state.mount };
 }
 /* Bezeichnung folgt der Bedienart: Druckschalter, Wippschalter oder Kippschalter */
 function itemName(it) {
@@ -138,12 +163,12 @@ function renderLines() {
     box.appendChild(h('div', { class: 'brandrow' }, [h('h3', { text: b }), grid]));
   });
 }
-function resizeSlots(c, r) {
-  const old = state.slots, oc = state.cols, orr = state.rows, ns = [];
+/* nach Wechsel von Bauart oder Linie: Farben, Grösse und Einsätze aller Rahmen passend machen */
+function resizeFrame(f, c, r) {
+  const old = f.slots, oc = f.cols, orr = f.rows, ns = [];
   for (let y = 0; y < r; y++) for (let x = 0; x < c; x++) ns.push(x < oc && y < orr ? old[y * oc + x] : { item: 't13', rot: 0, flip: false });
-  state.cols = c; state.rows = r; state.slots = ns; state.sel = Math.min(state.sel, ns.length - 1);
+  f.cols = c; f.rows = r; f.slots = ns;
 }
-/* nach Wechsel von Bauart oder Linie: Farben, Grösse und Einsätze passend machen */
 function normalize(prevF, prevI) {
   const L = curL(), fo = frameOpts(L, state.mount);
   let fc = byId(fo, state.fc);
@@ -154,11 +179,14 @@ function normalize(prevF, prevI) {
   }
   if (!byId(L.colors, state.ic)) state.ic = nearestColor(L, prevI ? prevI.hex : '#ffffff').id;
   if (state.link) syncInsert();
-  let c = state.cols, r = state.rows;
-  while (!sizeAllowed(c, r, state.mount)) { if (c >= r && c > 1) c--; else if (r > 1) r--; else break; }
-  if (c !== state.cols || r !== state.rows) resizeSlots(c, r);
   let dropped = 0;
-  state.slots.forEach(function (s) { if (!itemAllowed(ITEM[s.item], L)) { s.item = 'blind'; s.rot = 0; s.flip = false; dropped++; } });
+  state.frames.forEach(function (f) {
+    let c = f.cols, r = f.rows;
+    while (!sizeAllowed(c, r, state.mount)) { if (c >= r && c > 1) c--; else if (r > 1) r--; else break; }
+    if (c !== f.cols || r !== f.rows) resizeFrame(f, c, r);
+    f.slots.forEach(function (s) { if (!itemAllowed(ITEM[s.item], L)) { s.item = 'blind'; s.rot = 0; s.flip = false; dropped++; } });
+  });
+  state.sel = Math.min(state.sel, af().slots.length - 1);
   if (dropped) toast(dropped === 1 ? '1 Einsatz gibt es in ' + L.name + ' nicht – ersetzt durch eine Blindabdeckung.' : dropped + ' Einsätze gibt es in ' + L.name + ' nicht – ersetzt durch Blindabdeckungen.');
 }
 function setLine(id) {
@@ -206,25 +234,76 @@ function hoverSize(c, r) {
   $('#sizegrid').querySelectorAll('button').forEach(function (b) { b.classList.toggle('hov', +b.dataset.c <= c && +b.dataset.r <= r); });
 }
 function renderSize() {
-  const g = $('#sizegrid'), d = curDims(), L = curL();
+  const g = $('#sizegrid'), a = af(), d = curDims(), L = curL();
   g.textContent = '';
   for (let r = 1; r <= 4; r++) for (let c = 1; c <= 4; c++) {
     (function (c, r) {
       g.appendChild(h('button', {
-        type: 'button', 'data-c': c, 'data-r': r, class: (c <= state.cols && r <= state.rows) ? 'in' : '',
+        type: 'button', 'data-c': c, 'data-r': r, class: (c <= a.cols && r <= a.rows) ? 'in' : '',
         'aria-label': c + ' × ' + r + ' Felder', title: c + ' × ' + r, disabled: !sizeAllowed(c, r, state.mount),
-        'aria-pressed': String(c === state.cols && r === state.rows),
+        'aria-pressed': String(c === a.cols && r === a.rows),
         onclick: function () { setSize(c, r); }, onmouseenter: function () { hoverSize(c, r); }, onmouseleave: function () { hoverSize(0, 0); }
       }));
     })(c, r);
   }
-  $('#sizeMain').textContent = state.cols + ' × ' + state.rows + (state.cols * state.rows === 1 ? ' Feld' : ' Felder');
+  $('#sizeMain').textContent = a.cols + ' × ' + a.rows + (a.cols * a.rows === 1 ? ' Feld' : ' Felder');
   $('#sizeDims').textContent = ((L.wet || state.mount === 'ap') ? 'Gehäuse ' : L.shape === 'circle' ? 'Platte ' : 'Rahmen ') + d.W + ' × ' + d.H + ' mm';
   $('#sizeNote').textContent = sizeNote(state.mount);
 }
 function setSize(c, r) {
   if (!sizeAllowed(c, r, state.mount)) return;
-  resizeSlots(c, r); update('size');
+  resizeFrame(af(), c, r); state.sel = Math.min(state.sel, af().slots.length - 1); update('size');
+}
+
+/* ---------- Reihe: Rahmen nebeneinander ---------- */
+function pickItem(L, prefs) {
+  for (let i = 0; i < prefs.length; i++) { const it = ITEM[prefs[i]]; if (it && itemAllowed(it, L)) return it.id; }
+  return 'blind';
+}
+function renderFrames() {
+  const box = $('#frameStrip'), n = state.frames.length;
+  box.textContent = '';
+  state.frames.forEach(function (f, i) {
+    box.appendChild(h('button', {
+      type: 'button', 'aria-pressed': String(i === state.act), title: 'Rahmen ' + (i + 1),
+      onclick: function () { setActive(i); }
+    }, ['Rahmen ' + (i + 1) + ' · ' + (f.cols * f.rows === 1 ? 'Einzel' : 'Kombi') + ' ' + f.cols + '×' + f.rows]));
+  });
+  $('#rowCount').textContent = n === 1 ? '1 Rahmen' : n + ' Rahmen · ' + slotTotal() + ' Felder';
+  $('#btnAddKombi').disabled = n >= MAX_FRAMES;
+  $('#btnAddSingle').disabled = n >= MAX_FRAMES;
+  $('#btnFrameLeft').disabled = state.act <= 0;
+  $('#btnFrameRight').disabled = state.act >= n - 1;
+  $('#btnFrameDel').disabled = n <= 1;
+  $('#rowNote').textContent = n === 1
+    ? 'Mit «+ Kombi» oder «+ Einzelstück» setzt du weitere Rahmen daneben, bis zu ' + MAX_FRAMES + ' Stück.'
+    : 'Gewählt ist Rahmen ' + (state.act + 1) + ': Grösse und Bestückung gelten für ihn. Im Bild wählst du jeden Rahmen mit einem Klick.';
+}
+function setActive(i) {
+  if (i === state.act || i < 0 || i >= state.frames.length) return;
+  state.act = i; state.sel = 0; update('frame');
+}
+function addFrame(single) {
+  if (state.frames.length >= MAX_FRAMES) return;
+  const L = curL();
+  const f = single
+    ? { cols: 1, rows: 1, slots: [{ item: pickItem(L, ['s3', 't13']), rot: 0, flip: false }] }
+    : { cols: 2, rows: 1, slots: [{ item: pickItem(L, ['s3', 'blind']), rot: 0, flip: false }, { item: pickItem(L, ['t13x3', 't13']), rot: 0, flip: false }] };
+  state.frames.splice(state.act + 1, 0, f);
+  state.act += 1; state.sel = 0;
+  update('frame');
+}
+function moveFrame(d) {
+  const j = state.act + d;
+  if (j < 0 || j >= state.frames.length) return;
+  const t = state.frames[j]; state.frames[j] = state.frames[state.act]; state.frames[state.act] = t;
+  state.act = j; update('frame');
+}
+function removeFrame() {
+  if (state.frames.length <= 1) return;
+  state.frames.splice(state.act, 1);
+  state.act = Math.min(state.act, state.frames.length - 1); state.sel = 0;
+  update('frame');
 }
 
 /* ---------- Bestückung ---------- */
@@ -236,18 +315,18 @@ function drawMini(cv, s) {
   ctx.drawImage(src, -cv.width / 2, -cv.height / 2, cv.width, cv.height); ctx.restore();
 }
 function renderSlotbar() {
-  const s = state.slots[state.sel], it = ITEM[s.item], n = $('#slotName');
+  const s = af().slots[state.sel], it = ITEM[s.item], n = $('#slotName');
   n.textContent = '';
-  n.appendChild(document.createTextNode('Feld ' + (state.sel + 1) + ' von ' + state.slots.length + ': '));
+  n.appendChild(document.createTextNode((state.frames.length > 1 ? 'Rahmen ' + (state.act + 1) + ', ' : '') + 'Feld ' + (state.sel + 1) + ' von ' + af().slots.length + ': '));
   n.appendChild(h('b', { text: itemName(it) }));
   $('#btnFlip').disabled = !(it.tog && state.op !== 'druck');
   $('#btnFlip').textContent = state.op === 'kipp' ? 'Hebel umlegen' : 'Wippe umlegen';
-  $('#btnAll').disabled = state.slots.length < 2;
+  $('#btnAll').disabled = af().slots.length < 2;
 }
 function renderMinimap() {
-  const m = $('#minimap'), cell = isNarrow() ? Math.max(38, Math.min(62, Math.floor(134 / state.rows))) : 72;
-  m.textContent = ''; m.style.setProperty('--c', state.cols); m.style.setProperty('--cell', cell + 'px');
-  state.slots.forEach(function (s, i) {
+  const a = af(), m = $('#minimap'), cell = isNarrow() ? Math.max(38, Math.min(62, Math.floor(134 / a.rows))) : 72;
+  m.textContent = ''; m.style.setProperty('--c', a.cols); m.style.setProperty('--cell', cell + 'px');
+  a.slots.forEach(function (s, i) {
     const cv = h('canvas', { width: 128, height: 128 });
     m.appendChild(h('button', {
       class: 'cell', type: 'button', 'aria-pressed': String(i === state.sel), 'aria-label': 'Feld ' + (i + 1) + ': ' + itemName(ITEM[s.item]),
@@ -258,14 +337,30 @@ function renderMinimap() {
   renderSlotbar();
 }
 function redrawMinis() {
-  $('#minimap').querySelectorAll('canvas').forEach(function (cv, k) { if (state.slots[k]) drawMini(cv, state.slots[k]); });
+  $('#minimap').querySelectorAll('canvas').forEach(function (cv, k) { if (af().slots[k]) drawMini(cv, af().slots[k]); });
 }
+/* Feld im aktiven Rahmen wählen */
 function pick(i, fromStage) {
-  if (i < 0 || i >= state.slots.length) return;
+  if (i < 0 || i >= af().slots.length) return;
   state.sel = i; save();
   $('#minimap').querySelectorAll('.cell').forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
   renderSlotbar(); filterItems();
-  if (stage) stage.select(i);
+  if (stage) stage.select(gidx());
+  if (fromStage) {
+    setTab('secFill');
+    if (!isNarrow()) { const sec = $('#secFill'); if (sec.scrollIntoView) sec.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+  }
+}
+/* Klick im Bild: Feld über die globale Nummer finden und den zugehörigen Rahmen wählen */
+function pickGlobal(gi, fromStage) {
+  let base = 0;
+  for (let k = 0; k < state.frames.length; k++) {
+    const n = state.frames[k].cols * state.frames[k].rows;
+    if (gi < base + n) { state.act = k; state.sel = gi - base; break; }
+    base += n;
+  }
+  save(); renderFrames(); renderSize(); renderMinimap(); filterItems();
+  if (stage) stage.select(gidx());
   if (fromStage) {
     setTab('secFill');
     if (!isNarrow()) { const sec = $('#secFill'); if (sec.scrollIntoView) sec.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
@@ -278,6 +373,8 @@ function renderOps() {
   $('#lidRow').hidden = !L.wet;
   if (L.wet) segButtons($('#lids'), [['auf', 'Offen'], ['zu', 'Geschlossen']], state.lid, function (v) { state.lid = v; update('op'); });
 }
+
+/* ---------- Einsätze wählen ---------- */
 function buildCatalog() {
   const cats = $('#cats'), box = $('#items');
   cats.textContent = ''; box.textContent = '';
@@ -301,7 +398,7 @@ function buildCatalog() {
   });
 }
 function filterItems() {
-  const L = curL(), q = $('#q').value.trim().toLowerCase(), cur = state.slots[state.sel].item, catName = {}, usedCats = {};
+  const L = curL(), q = $('#q').value.trim().toLowerCase(), cur = af().slots[state.sel].item, catName = {}, usedCats = {};
   CATS.forEach(function (c) { catName[c[0]] = c[1]; });
   let n = 0;
   ITEMS.forEach(function (it) {
@@ -318,7 +415,7 @@ function filterItems() {
   $('#noItems').hidden = n > 0;
 }
 function assign(id) {
-  state.slots[state.sel] = { item: id, rot: 0, flip: false };
+  af().slots[state.sel] = { item: id, rot: 0, flip: false };
   update('slot');
 }
 
@@ -340,10 +437,14 @@ function envChanged() {
 
 /* ---------- Stückliste ---------- */
 function partsData() {
-  const L = curL(), fc = curFc(), ic = curIc(), d = curDims(), out = [], cnt = {}, order = [], sz = state.cols + '×' + state.rows;
+  const L = curL(), fc = curFc(), ic = curIc(), d = rowDims(), out = [], cnt = {}, order = [], n = state.frames.length;
   const what = L.wet ? (state.mount === 'nap' ? 'NAP-Gehäuse IP55 ' : 'NUP-Abdeckung IP55 ') : state.mount === 'ap' ? 'AP-Gehäuse mit Rahmen ' : L.shape === 'circle' ? 'Abdeckplatte ' : 'Abdeckrahmen ';
-  out.push({ n: 1, t: what + sz + ' · ' + L.brand + ' ' + L.name + (fc.mat && L.mname ? ' ' + L.mname : ''), s: fc.name + ' · ' + d.W + ' × ' + d.H + ' mm' });
-  state.slots.forEach(function (s) { if (!cnt[s.item]) { cnt[s.item] = 0; order.push(s.item); } cnt[s.item]++; });
+  if (n > 1) out.push({ n: 1, t: 'Reihe aus ' + n + ' Rahmen · ' + L.brand + ' ' + L.name, s: d.W + ' × ' + d.H + ' mm · ' + fc.name });
+  state.frames.forEach(function (f, i) {
+    const dd = frameDims(L, state.fc, f.cols, f.rows, state.mount);
+    out.push({ n: 1, t: (n > 1 ? 'Rahmen ' + (i + 1) + ': ' : '') + what + f.cols + '×' + f.rows + ' · ' + L.brand + ' ' + L.name + (fc.mat && L.mname ? ' ' + L.mname : ''), s: fc.name + ' · ' + dd.W + ' × ' + dd.H + ' mm' });
+  });
+  state.frames.forEach(function (f) { f.slots.forEach(function (s) { if (!cnt[s.item]) { cnt[s.item] = 0; order.push(s.item); } cnt[s.item]++; }); });
   order.forEach(function (id) {
     const it = ITEM[id];
     out.push({ n: cnt[id], t: itemName(it) + ' · ' + L.name + (L.wet ? ' IP55' : state.mount === 'ap' ? ' AP' : ''), s: it.sub + ' · ' + ic.name });
@@ -358,8 +459,9 @@ function renderList() {
   });
 }
 function copyList() {
-  const L = curL();
-  const txt = 'Kombination ' + state.cols + '×' + state.rows + ' – ' + L.brand + ' ' + L.name + '\n' +
+  const L = curL(), n = state.frames.length;
+  const head = n > 1 ? 'Reihe aus ' + n + ' Rahmen' : 'Kombination ' + af().cols + '×' + af().rows;
+  const txt = head + ' – ' + L.brand + ' ' + L.name + '\n' +
     partsData().map(function (p) { return p.n + ' × ' + p.t + ' (' + p.s + ')'; }).join('\n');
   const fail = function () {
     try { window.getSelection().selectAllChildren($('#parts')); toast('Liste markiert – jetzt kopieren.'); }
@@ -369,9 +471,9 @@ function copyList() {
   else fail();
 }
 function renderChips() {
-  const L = curL(), fc = curFc(), d = curDims(), m = MOUNTS.filter(function (x) { return x[0] === state.mount; })[0];
+  const L = curL(), fc = curFc(), d = rowDims(), m = MOUNTS.filter(function (x) { return x[0] === state.mount; })[0], n = state.frames.length;
   $('#chipLine').textContent = L.brand + ' ' + L.name + ' · ' + m[2].split(' ')[0] + ' · ' + fc.name;
-  $('#chipDims').textContent = state.cols + ' × ' + state.rows + ' · ' + d.W + ' × ' + d.H + ' mm';
+  $('#chipDims').textContent = (n > 1 ? n + ' Rahmen' : af().cols + ' × ' + af().rows) + ' · ' + d.W + ' × ' + d.H + ' mm';
 }
 
 /* ---------- Vorschaubilder der Einsätze ---------- */
@@ -381,7 +483,7 @@ function refreshThumbs() {
   if (key === thumbKey) return;
   thumbKey = key;
   const token = ++thumbToken, used = {}, list = [];
-  state.slots.forEach(function (s) { if (!used[s.item]) { used[s.item] = 1; list.push(ITEM[s.item]); } });
+  state.frames.forEach(function (f) { f.slots.forEach(function (s) { if (!used[s.item]) { used[s.item] = 1; list.push(ITEM[s.item]); } }); });
   ITEMS.forEach(function (it) { if (!used[it.id] && itemAllowed(it, L)) list.push(it); });
   let i = 0;
   const step = function () {
@@ -400,7 +502,7 @@ function refreshThumbs() {
 /* ---------- alles neu zeichnen ---------- */
 function pushStage() {
   if (!stage) return;
-  try { stage.setConfig(cfg()); stage.select(state.sel); }
+  try { stage.setConfig(cfg()); stage.select(gidx()); }
   catch (e) { if (window.console) console.error(e); toast('Diese Zusammenstellung konnte nicht dargestellt werden.'); }
   refreshThumbs();
 }
@@ -410,6 +512,7 @@ function update(kind) {
   if (kind === 'line' || kind === 'color') renderColors();
   if (kind !== 'slot' && kind !== 'op') renderSize();
   if (kind === 'line' || kind === 'op') renderOps();
+  renderFrames();
   renderMinimap(); filterItems(); renderList(); renderChips();
   pushStage();
 }
@@ -426,12 +529,19 @@ function setTab(id) {
 function randomize() {
   const pickOf = function (a) { return a[Math.floor(Math.random() * a.length)]; };
   const L = pickOf(linesFor(state.mount)), fc = pickOf(frameOpts(L, state.mount).filter(function (c) { return !c.old; }));
-  const sz = pickOf([[1, 1], [2, 1], [2, 1], [3, 1], [3, 1], [1, 2], [1, 3], [2, 2], [4, 1], [3, 2], [2, 3]].filter(function (s) { return sizeAllowed(s[0], s[1], state.mount); }));
+  const sizes = [[1, 1], [2, 1], [2, 1], [3, 1], [3, 1], [1, 2], [1, 3], [2, 2], [4, 1], [3, 2], [2, 3]].filter(function (s) { return sizeAllowed(s[0], s[1], state.mount); });
   const pool = ITEMS.filter(function (it) { return itemAllowed(it, L) && it.id !== 'blind'; });
   const fav = ['t13x3', 't13', 's3', 's33', 'st2', 'k1', 'rj1', 'dim', 't23', 't13x2'].filter(function (id) { return itemAllowed(ITEM[id], L); });
   state.line = L.id; state.fc = fc.id; state.link = true; state.ic = fc.mat ? pairColor(L, fc).id : fc.id;
-  state.cols = sz[0]; state.rows = sz[1]; state.slots = []; state.sel = 0;
-  for (let i = 0; i < sz[0] * sz[1]; i++) state.slots.push({ item: Math.random() < 0.6 ? pickOf(fav) : pickOf(pool).id, rot: 0, flip: Math.random() < 0.3 });
+  /* die Anzahl der Rahmen bleibt, Grösse und Einsätze werden neu gewürfelt */
+  const n = state.frames.length;
+  state.frames = [];
+  for (let k = 0; k < n; k++) {
+    const sz = pickOf(sizes), slots = [];
+    for (let i = 0; i < sz[0] * sz[1]; i++) slots.push({ item: Math.random() < 0.6 ? pickOf(fav) : pickOf(pool).id, rot: 0, flip: Math.random() < 0.3 });
+    state.frames.push({ cols: sz[0], rows: sz[1], slots: slots });
+  }
+  state.act = 0; state.sel = 0;
   update('line');
 }
 function closeModal() {
@@ -471,7 +581,7 @@ function deliver(blob, name) {
 }
 function saveImage() {
   if (!stage) { toast('Ohne 3D-Vorschau gibt es kein Bild zum Speichern.'); return; }
-  const btn = $('#btnSave'), L = curL(), name = 'kombination-' + L.id + '-' + state.cols + 'x' + state.rows + '.png';
+  const btn = $('#btnSave'), L = curL(), tag = state.frames.length > 1 ? 'reihe-' + state.frames.length : af().cols + 'x' + af().rows, name = 'kombination-' + L.id + '-' + tag + '.png';
   btn.disabled = true;
   stage.snapshot(function (blob) {
     btn.disabled = false;
@@ -483,17 +593,22 @@ function saveImage() {
 /* ---------- Start ---------- */
 (function init() {
   const progEl = $('#progress'), progBar = progEl.firstElementChild;
-  buildCatalog(); renderLines(); renderColors(); renderSize(); renderOps(); renderMinimap(); filterItems(); renderEnv(); renderList(); renderChips();
+  buildCatalog(); renderLines(); renderColors(); renderSize(); renderOps(); renderFrames(); renderMinimap(); filterItems(); renderEnv(); renderList(); renderChips();
   setTab(state.tab);
 
   $('#btnRandom').addEventListener('click', randomize);
   $('#btnSave').addEventListener('click', saveImage);
   $('#btnCopy').addEventListener('click', copyList);
-  $('#btnRot').addEventListener('click', function () { const s = state.slots[state.sel]; s.rot = ((s.rot || 0) + 1) % 4; update('slot'); });
-  $('#btnFlip').addEventListener('click', function () { const s = state.slots[state.sel]; s.flip = !s.flip; update('slot'); });
+  $('#btnAddKombi').addEventListener('click', function () { addFrame(false); });
+  $('#btnAddSingle').addEventListener('click', function () { addFrame(true); });
+  $('#btnFrameLeft').addEventListener('click', function () { moveFrame(-1); });
+  $('#btnFrameRight').addEventListener('click', function () { moveFrame(1); });
+  $('#btnFrameDel').addEventListener('click', removeFrame);
+  $('#btnRot').addEventListener('click', function () { const s = af().slots[state.sel]; s.rot = ((s.rot || 0) + 1) % 4; update('slot'); });
+  $('#btnFlip').addEventListener('click', function () { const s = af().slots[state.sel]; s.flip = !s.flip; update('slot'); });
   $('#btnAll').addEventListener('click', function () {
-    const s = state.slots[state.sel];
-    state.slots = state.slots.map(function () { return { item: s.item, rot: s.rot, flip: s.flip }; });
+    const s = af().slots[state.sel];
+    af().slots = af().slots.map(function () { return { item: s.item, rot: s.rot, flip: s.flip }; });
     update('slot');
   });
   $('#chkLink').addEventListener('change', function (e) { state.link = e.target.checked; if (state.link) syncInsert(); update('color'); });
@@ -513,7 +628,7 @@ function saveImage() {
   }
 
   stage = T ? createStage($('#stage'), $('#view'), $('#overlay'), {
-    onPick: function (i) { pick(i, true); },
+    onPick: function (i) { pickGlobal(i, true); },
     onProgress: function (p) { progBar.style.width = Math.round(p * 100) + '%'; progEl.classList.toggle('on', p < 1); }
   }) : null;
   if (!stage) { $('#nogl').hidden = false; $('#view').hidden = true; return; }

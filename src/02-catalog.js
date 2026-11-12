@@ -24,12 +24,12 @@ const LINES = [
   {
     id: 'ediziodue', brand: 'Feller', name: 'EDIZIOdue', tag: 'kantig, glänzend', size1: 88, shape: 'sq',
     mounts: ['up', 'ap'], apH: 44, wip: { w: 54, h: 54, r: 1.0 },
-    frame: { style: 'roof', border: 14, rc: 1.6, er: 0.35, hOut: 7.8, hIn: 9.0 },
+    frame: { style: 'roof', border: 14, rc: 1.6, er: 0.35, hOut: 6.2, hIn: 9.4 },
     mframe: { style: 'flat', border: 17, rc: 1.0, er: 0.6, h: 8.0 }, mname: 'prestige',
     insert: { shape: 'sq', size: 59.7, r: 0.5, er: 0.3, proud: 0.35 },
-    rocker: { w: 41, h: 41, r: 1.0, er: 0.45, proud: 2.3, tilt: 3.2 }, led: 'bar',
+    rocker: { w: 41, h: 41, r: 0.6, er: 0.4, proud: 2.6, tilt: 3.8 }, led: 'bar',
     kombi: { rw: 40.6, rh: 25, ry: 10.3, sy: -15.1 },
-    tri: 0, triR: 16.8, finish: 'gloss',
+    tri: 0, triR: 16.8, finish: 'lacquer',
     colors: [
       col('weiss', 'Weiss', '#f5f5f2'), col('creme', 'Crème', '#e9e3d0'), col('hellgrau', 'Hellgrau', '#c8cac8'),
       col('dunkelgrau', 'Dunkelgrau', '#6a6c6b'), col('schwarz', 'Schwarz', '#1b1b1a'), col('coffee', 'Coffee', '#5b4a3e'),
